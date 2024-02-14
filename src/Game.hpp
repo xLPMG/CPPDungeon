@@ -1,10 +1,8 @@
 #ifndef CPPDUNGEON_HPP
 #define CPPDUNGEON_HPP
-
+#define OLC_PGE_APPLICATION
+#include "olcPixelGameEngine.h"
 #include "constants.hpp"
-#include "entities/Player.hpp"
-
-#include <SDL.h>
 #include <chrono>
 
 namespace cppdungeon
@@ -12,23 +10,37 @@ namespace cppdungeon
     class Game;
 }
 
-class cppdungeon::Game
+class cppdungeon::Game : public olc::PixelGameEngine
 {
 public:
     f32 m_dt = 0;
     bool running = true;
 
+    Game()
+    {
+        sAppName = "dungeon";
+    }
+
     void handleEvents();
     void update();
     void render();
     void cleanup();
-    int start(int width, int height);
 
-private:    
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-    SDL_Texture *texture, *debug;
-    cppdungeon::entities::Player *m_player;
+private:
+    bool OnUserCreate() override
+    {
+        // Called once at the start, so create things here
+        return true;
+    }
+
+    bool OnUserUpdate(float fElapsedTime) override
+    {
+        // called once per frame
+        for (int x = 0; x < ScreenWidth(); x++)
+            for (int y = 0; y < ScreenHeight(); y++)
+                Draw(x, y, olc::Pixel(rand() % 255, rand() % 255, rand() % 255));
+        return true;
+    }
 };
 
 #endif

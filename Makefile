@@ -5,10 +5,8 @@ LD = g++
 
 # library paths
 PATH_LIB = lib
-PATH_SDL = $(PATH_LIB)/SDL
-PATH_SDL_IMG = $(PATH_LIB)/SDL_image
-
-INCFLAGS = -iquotesrc
+INCFLAGS = -I$(PATH_LIB)
+INCFLAGS += -I/usr/local/include
 
 CXXFLAGS  = -std=c++20
 CXXFLAGS += -O2
@@ -50,7 +48,12 @@ UNAME := $(shell uname -s)
 ifeq ($(UNAME),Darwin)
 	CXX = $(shell brew --prefix llvm)/bin/clang
 	LD = $(shell brew --prefix llvm)/bin/clang
+	LDFLAGS += -framework OpenGL -framework GLUT -framework Carbon -lpng -L/usr/local/lib
+	LDFLAGS += -framework CoreGraphics -framework Foundation
 else ifeq ($(UNAME),Linux)
+	LDFLAGS += -lX11 -lGL -lpthread -lpng -lstdc++fs
+else ifeq ($(UNAME),Windows)
+	LDFLAGS += -user32 -gdi32 -opengl32 -gdiplus -Shlwapi -dwmapi -stdc++fs
 endif
 
 $(BIN):

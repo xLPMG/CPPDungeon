@@ -1,26 +1,31 @@
 #include "Game.hpp"
 #include "constants.hpp"
 
-#include <SDL.h>
-#include <iostream>
-#include <string>
 
-int main(int argc, char *argv[])
+#if WIN32
+#include <windows.h>
+#else
+#include <CoreGraphics/CGDisplayConfiguration.h>
+#endif
+
+using namespace cppdungeon;
+
+int main()
 {
-    cppdungeon::Game *game = new cppdungeon::Game();
-    std::cout << "Starting game" << std::endl;
-    game->start(1280, 720);
+	u32 width = 0;
+	u32 height = 0;
+#if WIN32
+    width = (int)GetSystemMetrics(SM_CXSCREEN);
+    height = (int)GetSystemMetrics(SM_CYSCREEN);
+#else
+    auto mainDisplayId = CGMainDisplayID();
+    width = CGDisplayPixelsWide(mainDisplayId);
+    height = CGDisplayPixelsHigh(mainDisplayId);
+#endif
 
-    cppdungeon::u32 startTicks;
-    while (game->running)
-    {
-        startTicks = SDL_GetTicks();
+	Game demo;
+	if (demo.Construct(width / 4, height / 4, 4, 4))
+		demo.Start();
 
-        game->handleEvents();
-        game->update();
-        game->render();
-
-        game->m_dt = (SDL_GetTicks() - startTicks) / 1000.0f;
-    }
-    game->cleanup();
+	return 0;
 }
