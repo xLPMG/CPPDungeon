@@ -5,6 +5,7 @@
 cppdungeon::entities::Player::Player(SDL_Renderer *renderer, v2 initial_position)
 {
     position = initial_position;
+    char *pwd = SDL_GetBasePath();
     SDL_Surface *surface;
     surface = IMG_Load("res/textures/hero/hero_right_0001.png");
     rightTexture[0] = SDL_CreateTextureFromSurface(renderer, surface);
