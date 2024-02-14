@@ -52,6 +52,16 @@ namespace cppdungeon
         i32 x, y;
     } v2i;
 
+    typedef struct rect_s
+    {
+        f32 x, y, width, height;
+    } rect;
+
+        typedef struct recti_s
+    {
+        i32 x, y, width, height;
+    } recti;
+
     enum class Direction
     {
         UP,

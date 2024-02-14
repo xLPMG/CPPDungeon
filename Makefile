@@ -6,6 +6,7 @@ LD = g++
 # library paths
 PATH_LIB = lib
 PATH_SDL = $(PATH_LIB)/SDL
+PATH_SDL_IMG = $(PATH_LIB)/SDL_image
 
 INCFLAGS = -iquotesrc
 
@@ -35,6 +36,7 @@ CXXFLAGS += -Wno-gnu-empty-initializer
 CXXFLAGS += -Wno-gnu-pointer-arith
 
 LDFLAGS = -lm
+LDFLAGS += -lstdc++
 
 BIN = bin
 SRC = $(shell find src -name "*.cpp")
@@ -50,10 +52,12 @@ ifeq ($(UNAME),Darwin)
 	LD = $(shell brew --prefix llvm)/bin/clang
 
 	INCFLAGS += -I$(PATH_SDL)/include
+	INCFLAGS += -I$(PATH_SDL_IMG)/include
 	LDFLAGS += $(shell $(BIN)/sdl/sdl2-config --prefix=$(BIN) --static-libs)
 else ifeq ($(UNAME),Linux)
 	LDFLAGS += -lSDL2
 endif
+	LDFLAGS += -lSDL2_image
 
 $(BIN):
 	mkdir -p $@
@@ -64,12 +68,17 @@ dirs: $(BIN)
 lib-sdl:
 	mkdir -p $(BIN)/sdl
 	cmake -S $(PATH_SDL) -B $(BIN)/sdl
-	cd $(BIN)/sdl && make -j 10
+	cd $(BIN)/sdl && make -j 4
 	chmod +x $(BIN)/sdl/sdl2-config
 	mkdir -p $(BIN)/lib
 	cp $(BIN)/sdl/libSDL2.a $(BIN)/lib
 
-libs: lib-sdl
+
+lib-sdl_img:
+	cd $(PATH_SDL_IMG) && make -j 4 install
+	cp $(BIN)/sdl_image/lib/libSDL2_image.a $(BIN)/lib
+
+libs: lib-sdl lib-sdl_img
 
 $(OBJ): $(BIN)/%.o: %.cpp
 	$(CXX) -o $@ -MMD -c $< $(CXXFLAGS) $(INCFLAGS)
@@ -85,4 +94,4 @@ all: dirs dungeon
 .PHONY: clean
 
 clean:
-	rm -rf bin
+	rm -rf bin/src

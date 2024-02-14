@@ -6,6 +6,7 @@
 lib/
 bin/
 .idea/
+*.log
 
 *.tmp
 
