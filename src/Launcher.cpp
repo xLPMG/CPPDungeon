@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <iostream>
+#include <string>
 
 int main(int argc, char *argv[])
 {
@@ -10,16 +11,16 @@ int main(int argc, char *argv[])
     std::cout << "Starting game" << std::endl;
     game->start(1280, 720);
 
-    cppdungeon::u32 start;
+    cppdungeon::u32 startTicks;
     while (game->running)
     {
-        start = SDL_GetTicks();
+        startTicks = SDL_GetTicks();
 
         game->handleEvents();
         game->update();
         game->render();
 
-        game->m_dt = (SDL_GetTicks() - start) / 100.0f;
+        game->m_dt = (SDL_GetTicks() - startTicks) / 1000.0f;
     }
     game->cleanup();
 }

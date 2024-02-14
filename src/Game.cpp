@@ -39,6 +39,7 @@ void cppdungeon::Game::update()
 
 void cppdungeon::Game::render()
 {
+  SDL_SetRenderDrawColor(renderer, 66, 40, 53, 255);
   SDL_RenderClear(renderer);
   m_player->render(renderer);
   SDL_RenderPresent(renderer);
