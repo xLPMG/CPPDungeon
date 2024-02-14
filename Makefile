@@ -50,14 +50,8 @@ UNAME := $(shell uname -s)
 ifeq ($(UNAME),Darwin)
 	CXX = $(shell brew --prefix llvm)/bin/clang
 	LD = $(shell brew --prefix llvm)/bin/clang
-
-	INCFLAGS += -I$(PATH_SDL)/include
-	INCFLAGS += -I$(PATH_SDL_IMG)/include
-	LDFLAGS += $(shell $(BIN)/sdl/sdl2-config --prefix=$(BIN) --static-libs)
 else ifeq ($(UNAME),Linux)
-	LDFLAGS += -lSDL2
 endif
-	LDFLAGS += -lSDL2_image
 
 $(BIN):
 	mkdir -p $@
@@ -65,20 +59,6 @@ $(BIN):
 dirs: $(BIN)
 	rsync -a --include '*/' --exclude '*' "src" "bin"
 
-lib-sdl:
-	mkdir -p $(BIN)/sdl
-	cmake -S $(PATH_SDL) -B $(BIN)/sdl
-	cd $(BIN)/sdl && make -j 4
-	chmod +x $(BIN)/sdl/sdl2-config
-	mkdir -p $(BIN)/lib
-	cp $(BIN)/sdl/libSDL2.a $(BIN)/lib
-
-
-lib-sdl_img:
-	cd $(PATH_SDL_IMG) && make -j 4 install
-	cp $(BIN)/sdl_image/lib/libSDL2_image.a $(BIN)/lib
-
-libs: lib-sdl lib-sdl_img
 
 $(OBJ): $(BIN)/%.o: %.cpp
 	$(CXX) -o $@ -MMD -c $< $(CXXFLAGS) $(INCFLAGS)
