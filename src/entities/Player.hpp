@@ -34,7 +34,7 @@ private:
     Direction direction = Direction::IDLE;
 
 public:
-    Player();
+    Player(olc::vf2d position);
     ~Player();
     void update(float fElapsedTime);
     void render(olc::PixelGameEngine *pge, olc::vf2d offset);

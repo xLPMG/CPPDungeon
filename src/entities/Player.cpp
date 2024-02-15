@@ -1,9 +1,7 @@
 #include "Player.hpp"
 
-cppdungeon::entities::Player::Player()
+cppdungeon::entities::Player::Player(olc::vf2d position): Entity(position, {16, 16})
 {
-    position = { 0, 0 };
-    size = { 16, 16 };
     idleAnimation = std::make_unique<gfx::Animation>("./res/textures/hero/hero_sit_sheet.png", 16, 16, 0.4, false);
     frontAnimation = std::make_unique<gfx::Animation>("./res/textures/hero/hero_front_sheet.png", 16, 16, 0.15);
     backAnimation = std::make_unique<gfx::Animation>("./res/textures/hero/hero_back_sheet.png", 16, 16, 0.15);
@@ -93,13 +91,22 @@ void cppdungeon::entities::Player::move(i8 *x, i8 *y, bool sprinting, f32 *delta
         return;
     }
 
-    olc::vf2d potentialPosition = position + olc::vf2d(actualSpeedX, actualSpeedY) *  *deltaTime;
+    position += olc::vf2d(actualSpeedX, actualSpeedY) *  *deltaTime;
 
-    if (!map->collides({potentialPosition.x + bounds.x, potentialPosition.y + bounds.y}) &&
-        !map->collides({potentialPosition.x + bounds.x + bounds.width, potentialPosition.y + bounds.y}) &&
-        !map->collides({potentialPosition.x + bounds.x, potentialPosition.y + bounds.y + bounds.height}) &&
-        !map->collides({potentialPosition.x + bounds.x + bounds.width, potentialPosition.y + bounds.y + bounds.height}))
-    {
-        position = potentialPosition;
+    u32 tileId;
+    // top middle
+    if(map->collides({position.x + bounds.x + bounds.width/2, position.y + bounds.y}, tileId)){
+        position.y = (u32)(tileId / map->width + 1) * map->tileSize.y - bounds.y;
+    // bottom middle
+    }else if(map->collides({position.x + bounds.x + bounds.width/2, position.y + bounds.y + bounds.height}, tileId)){
+       position.y = (u32)(tileId / map->width) * map->tileSize.y - bounds.y - bounds.height;
+    }
+
+    // left middle
+    if(map->collides({position.x + bounds.x, position.y + bounds.y + bounds.height/2}, tileId)){
+        position.x = (u32)(tileId % map->width + 1) * map->tileSize.x - bounds.x;
+    // right middle
+    }else if(map->collides({position.x + bounds.x + bounds.width, position.y + bounds.y + bounds.height/2}, tileId)){
+        position.x = (u32)(tileId % map->width) * map->tileSize.x - bounds.x - bounds.width;
     }
 }

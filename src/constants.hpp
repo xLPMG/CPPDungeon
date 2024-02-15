@@ -1,6 +1,6 @@
 /**
  * Constants / typedefs used throughout the code.
- * 
+ *
  * @author Luca-Philipp Grumbach
  **/
 #ifndef CONSTANTS_HPP
@@ -54,10 +54,15 @@ namespace cppdungeon
         f32 x, y, width, height;
     } rect;
 
-        typedef struct recti_s
+    typedef struct recti_s
     {
         i32 x, y, width, height;
     } recti;
+
+    typedef struct rectu_s
+    {
+        u32 x, y, width, height;
+    } rectu;
 
     enum class Direction
     {

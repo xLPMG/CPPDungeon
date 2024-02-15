@@ -10,6 +10,11 @@ cppdungeon::world::Map::Map(i32 seed, i32 width, i32 height, olc::vf2d tileSize,
     {
         for (i32 x = 0; x < width; x++)
         {
+            if(x == 0 || x == width - 1 || y == 0 || y == height - 1){
+                tiles[y * width + x] = 0;
+                continue;
+            }
+
             if (rand() % 100 < 80)
             {
                 tiles[y * width + x] = 1;
@@ -46,11 +51,20 @@ void cppdungeon::world::Map::renderForeground(olc::PixelGameEngine *pge, olc::vf
 {
 }
 
-bool cppdungeon::world::Map::collides(olc::vf2d coordinate)
+bool cppdungeon::world::Map::collides(olc::vf2d coordinate, cppdungeon::u32 &tileId)
 {
     if(coordinate.x < 0 || coordinate.y < 0 || coordinate.x >= width * tileSize.x || coordinate.y >= height * tileSize.y)
     {
+        tileId = 0;
         return true;
     }
-    return tileRegistry->tiles[tiles[(u32)(coordinate.x / tileSize.x) + (u32)(coordinate.y / tileSize.y) * width]]->getSolid();
+    tileId = (u32)(coordinate.x / tileSize.x) + (u32)(coordinate.y / tileSize.y) * width;
+    return tileRegistry->tiles[tiles[tileId]]->getSolid();
+}
+
+cppdungeon::rectu cppdungeon::world::Map::getTileBounds(u32 tileid)
+{
+    u32 x = tileid % width;
+    u32 y = tileid / width;
+    return {x, y, x + (u32)tileSize.x, y + (u32)tileSize.y};
 }
