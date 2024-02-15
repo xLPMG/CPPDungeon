@@ -29,7 +29,7 @@ private:
     olc::vi2d vBlockSize = { 16,16 };
     std::vector<entities::Entity *> entities;
     cppdungeon::world::tiles::TileRegistry* tileRegistry;
-    std::unique_ptr<world::Map> map;
+    world::Map* map;
 
     entities::Entity *player;
     

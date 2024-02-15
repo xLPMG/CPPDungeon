@@ -10,10 +10,10 @@
 bool cppdungeon::Game::OnUserCreate()
 {
     tileRegistry = new cppdungeon::world::tiles::TileRegistry();
+    map = new world::Map(1000, 100, 100, olc::vf2d{16, 16}, tileRegistry);
     camera = new cppdungeon::gfx::Camera({0, 0});
     player = new cppdungeon::entities::Player();
     entities.push_back(player);
-    map = std::make_unique<cppdungeon::world::Map>(1000, 100, 100, olc::vf2d{16, 16}, tileRegistry);
 
     return true;
 }
@@ -28,7 +28,7 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     bool sprinting = GetKey(olc::Key::SHIFT).bHeld;
     i8 x = moveRight - moveLeft;
     i8 y = moveDown - moveUp;
-    player->move(&x, &y, sprinting, &fElapsedTime);
+    player->move(&x, &y, sprinting, &fElapsedTime, map);
 
     // UPDATE
     for (auto &entity : entities)
@@ -51,6 +51,7 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
 bool cppdungeon::Game::OnUserDestroy()
 {
     delete tileRegistry;
+    delete map;
     delete camera;
     for (auto &entity : entities)
     {

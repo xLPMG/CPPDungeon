@@ -30,7 +30,12 @@ public:
     Tile(std::string texture);
     ~Tile();
     void render(olc::PixelGameEngine* pge, olc::vf2d position);
-    void setSolid(bool isSolid);
+    bool getSolid(){
+        return isSolid;
+    }
+    void setSolid(bool isSolid){
+        this->isSolid = isSolid;
+    }
 };
 
 #endif

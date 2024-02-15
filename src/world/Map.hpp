@@ -30,6 +30,7 @@ class cppdungeon::world::Map
         void update(float fElapsedTime);
         void renderBackground(olc::PixelGameEngine *pge, olc::vf2d offset, olc::vf2d screenSize);
         void renderForeground(olc::PixelGameEngine *pge, olc::vf2d offset, olc::vf2d screenSize);
+        bool collides(olc::vf2d coordinate);
 };
 
 #endif

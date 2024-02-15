@@ -61,7 +61,7 @@ switch (direction)
     }
 }
 
-void cppdungeon::entities::Player::move(i8 *x, i8 *y, bool sprinting, f32 *deltaTime)
+void cppdungeon::entities::Player::move(i8 *x, i8 *y, bool sprinting, f32 *deltaTime, cppdungeon::world::Map* map)
 {
     f32 actualSpeedX = *x * speed * (sprinting ? sprintBoost : 1);
     f32 actualSpeedY = *y * speed * (sprinting ? sprintBoost : 1);
@@ -90,8 +90,16 @@ void cppdungeon::entities::Player::move(i8 *x, i8 *y, bool sprinting, f32 *delta
     else
     {
         direction = Direction::IDLE;
+        return;
     }
 
-    position.x += actualSpeedX * *deltaTime;
-    position.y += actualSpeedY * *deltaTime;
+    olc::vf2d potentialPosition = position + olc::vf2d(actualSpeedX, actualSpeedY) *  *deltaTime;
+
+    if (!map->collides({potentialPosition.x + bounds.x, potentialPosition.y + bounds.y}) &&
+        !map->collides({potentialPosition.x + bounds.x + bounds.width, potentialPosition.y + bounds.y}) &&
+        !map->collides({potentialPosition.x + bounds.x, potentialPosition.y + bounds.y + bounds.height}) &&
+        !map->collides({potentialPosition.x + bounds.x + bounds.width, potentialPosition.y + bounds.y + bounds.height}))
+    {
+        position = potentialPosition;
+    }
 }
