@@ -16,7 +16,7 @@ namespace cppdungeon
             olc::vf2d position;
             olc::vf2d size;
             f32 speed = 50.0f;
-            f32 sprintBoost = 1.5f;
+            f32 sprintBoost = 2.0f;
 
         public:
             virtual void update(f32 fElapsedTime) = 0;

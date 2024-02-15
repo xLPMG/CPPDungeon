@@ -17,6 +17,8 @@ cppdungeon::entities::Player::~Player()
 
 void cppdungeon::entities::Player::update(float fElapsedTime)
 {
+    hitbox = {position.x + bounds.x, position.y + bounds.y, bounds.width, bounds.height};
+
     switch (direction)
     {
     case Direction::RIGHT:

@@ -9,10 +9,11 @@
 
 bool cppdungeon::Game::OnUserCreate()
 {
+    tileRegistry = new cppdungeon::world::tiles::TileRegistry();
     camera = new cppdungeon::gfx::Camera({0, 0});
     player = new cppdungeon::entities::Player();
     entities.push_back(player);
-    map = std::make_unique<cppdungeon::world::Map>(1000, 100, 100, olc::vf2d{16, 16});
+    map = std::make_unique<cppdungeon::world::Map>(1000, 100, 100, olc::vf2d{16, 16}, tileRegistry);
 
     return true;
 }
@@ -37,7 +38,7 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
 
     // RENDER
     camera->setOffset(player->getPosition() - GetScreenSize() / 2 + player->getSize() / 2);
-    Clear(olc::Pixel(66, 40, 53));
+    Clear(olc::Pixel(28, 17, 23));
 
     map->renderBackground(this, camera->getOffset(), GetScreenSize());
     for (auto &entity : entities)
@@ -49,6 +50,8 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
 
 bool cppdungeon::Game::OnUserDestroy()
 {
+    delete tileRegistry;
+    delete camera;
     for (auto &entity : entities)
     {
         delete entity;

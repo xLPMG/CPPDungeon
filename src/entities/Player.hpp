@@ -21,7 +21,8 @@ private:
     std::unique_ptr<gfx::Animation> leftAnimation;
     std::unique_ptr<gfx::Animation> rightAnimation;
 
-    rect hitbox = {position.x, position.y, 32, 32};
+    rect bounds = {3, 7, 10, 9};
+    rect hitbox = {0,0,0,0};
     enum class Direction
     {
         LEFT,

@@ -1,9 +1,10 @@
 #include "Map.hpp"
 
-cppdungeon::world::Map::Map(i32 seed, i32 width, i32 height, olc::vf2d tileSize)
-    : width(width), height(height), tileSize(tileSize)
+cppdungeon::world::Map::Map(i32 seed, i32 width, i32 height, olc::vf2d tileSize, cppdungeon::world::tiles::TileRegistry* tileRegistry)
+    : width(width), height(height), tileSize(tileSize), tileRegistry(tileRegistry)
 {
-    tiles = std::make_unique<i32[]>(width * height);
+    tiles = new i32[width * height]{0};
+
     srand(seed);
     for (i32 y = 0; y < height; y++)
     {
@@ -12,10 +13,6 @@ cppdungeon::world::Map::Map(i32 seed, i32 width, i32 height, olc::vf2d tileSize)
             if (rand() % 100 < 50)
             {
                 tiles[y * width + x] = 1;
-            }
-            else
-            {
-                tiles[y * width + x] = 0;
             }
         }
     }
@@ -36,7 +33,9 @@ void cppdungeon::world::Map::renderBackground(olc::PixelGameEngine *pge, olc::vf
     {
         for (int x = start.x; x < end.x; x++)
         {
-            pge->FillRect(olc::vi2d(x, y) * tileSize - offset, tileSize, tiles[y * width + x] == 1 ? olc::WHITE : olc::BLACK);
+            if(tiles[y * width + x] > 0){
+                tileRegistry->tiles[tiles[y * width + x]]->render(pge, olc::vi2d(x, y) * tileSize - offset);
+            }
         }
     }
     pge->SetPixelMode(olc::Pixel::NORMAL);
