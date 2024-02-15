@@ -40,9 +40,6 @@ namespace cppdungeon
 #define DEG2RAD(_d) ((_d) * (PI / 180.0f))
 #define RAD2DEG(_d) ((_d) * (180.0f / PI))
 
-#define SCREEN_WIDTH 384
-#define SCREEN_HEIGHT 216
-
     typedef struct v2_s
     {
         f32 x, y;

@@ -1,9 +1,15 @@
-#ifndef CPPDUNGEON_HPP
-#define CPPDUNGEON_HPP
+#ifndef GAME_HPP
+#define GAME_HPP
+
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
+
 #include "constants.hpp"
+#include "gfx/Camera.hpp"
+#include "entities/Entity.hpp"
+#include "world/Map.hpp"
 #include <chrono>
+#include <memory>
 
 namespace cppdungeon
 {
@@ -13,33 +19,24 @@ namespace cppdungeon
 class cppdungeon::Game : public olc::PixelGameEngine
 {
 public:
-    f32 m_dt = 0;
-    bool running = true;
-
     Game()
     {
         sAppName = "dungeon";
     }
+private:    
+    gfx::Camera *camera;
+    olc::vi2d vBlockSize = { 16,16 };
+    std::vector<entities::Entity *> entities;
+    std::unique_ptr<world::Map> map;
 
-    void handleEvents();
-    void update();
-    void render();
-    void cleanup();
+    entities::Entity *player;
+    
+    bool OnUserCreate() override;
+    bool OnUserUpdate(float fElapsedTime) override;
+    bool OnUserDestroy() override;
 
-private:
-    bool OnUserCreate() override
-    {
-        // Called once at the start, so create things here
-        return true;
-    }
-
-    bool OnUserUpdate(float fElapsedTime) override
-    {
-        // called once per frame
-        for (int x = 0; x < ScreenWidth(); x++)
-            for (int y = 0; y < ScreenHeight(); y++)
-                Draw(x, y, olc::Pixel(rand() % 255, rand() % 255, rand() % 255));
-        return true;
+    gfx::Camera *getCamera(){
+        return this->camera;
     }
 };
 
