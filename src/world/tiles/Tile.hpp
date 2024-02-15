@@ -29,10 +29,10 @@ public:
 
     Tile(std::string texture);
     ~Tile();
-    void render(olc::PixelGameEngine* pge, olc::vf2d position);
+    virtual void render(olc::PixelGameEngine* pge, olc::vf2d position) = 0;
     bool getSolid(){
-        return isSolid;
-    }
+        return this->isSolid;
+    };
     void setSolid(bool isSolid){
         this->isSolid = isSolid;
     }

@@ -10,7 +10,7 @@ cppdungeon::world::Map::Map(i32 seed, i32 width, i32 height, olc::vf2d tileSize,
     {
         for (i32 x = 0; x < width; x++)
         {
-            if (rand() % 100 < 50)
+            if (rand() % 100 < 80)
             {
                 tiles[y * width + x] = 1;
             }

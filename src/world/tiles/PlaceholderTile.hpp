@@ -17,14 +17,12 @@ namespace cppdungeon
 class cppdungeon::world::tiles::PlaceholderTile : public Tile
 {
 public:
-    PlaceholderTile(): Tile(""){};
+    PlaceholderTile(): Tile(""){
+        this->setSolid(true);
+    };
     ~PlaceholderTile();
-    void render(olc::PixelGameEngine *pge, olc::vf2d position) {
+    void render(olc::PixelGameEngine *pge, olc::vf2d position) override {
         // dont draw anything
-    }
-    bool getSolid()
-    {
-        return true;
     }
 };
 
