@@ -4,13 +4,16 @@
 
 cppdungeon::world::tiles::TileRegistry::TileRegistry()
 {
+    tiles.resize(2);
     tiles[0] = new PlaceholderTile();
     tiles[1] = new WalkableTile("./res/textures/map/floor_plain.png");
 }
 
 cppdungeon::world::tiles::TileRegistry::~TileRegistry()
 {
-    for(int i =0; i< cppdungeon::world::tiles::TileRegistry::TILE_COUNT; i++){
-        delete tiles[i];
+    for (auto t : tiles)
+    {
+        delete t;
     }
+    tiles.clear();
 }

@@ -2,6 +2,8 @@
 #define CPPDUNGEON_ENTITIES_ENTITY_HPP
 
 #include "../constants.hpp"
+#define OLC_IGNORE_VEC2D
+#include "olcUTIL_Geometry2D.h"
 #include "olcPixelGameEngine.h"
 #include "../gfx/Camera.hpp"
 #include "../world/Map.hpp"

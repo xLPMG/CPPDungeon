@@ -74,7 +74,7 @@ int main()
 #endif
 
     cppdungeon::Game demo;
-    if (demo.Construct(width / 4, height / 4, 4, 4))
+    if (demo.Construct(width / 1, height / 1, 1, 1))
         demo.Start();
 
     return 0;

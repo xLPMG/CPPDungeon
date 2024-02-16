@@ -93,6 +93,8 @@ void cppdungeon::entities::Player::move(i8 *x, i8 *y, bool sprinting, f32 *delta
 
     position += olc::vf2d(actualSpeedX, actualSpeedY) *  *deltaTime;
 
+    return;
+
     u32 tileId;
     // top middle
     if(map->collides({position.x + bounds.x + bounds.width/2, position.y + bounds.y}, tileId)){

@@ -2,10 +2,12 @@
 #define CPPDUNGEON_WORLD_MAP_HPP
 
 #include "../constants.hpp"
+#define OLC_IGNORE_VEC2D
+#include "olcUTIL_Geometry2D.h"
 #include "olcPixelGameEngine.h"
 #include "tiles/Tile.hpp"
 #include "tiles/TileRegistry.hpp"
-#include <memory>
+#include <vector>
 
 namespace cppdungeon
 {
@@ -20,7 +22,7 @@ class cppdungeon::world::Map
     using Tile = cppdungeon::world::tiles::Tile;
 
 private:
-    i32 *tiles;
+    std::vector<u16> tiles;
     cppdungeon::world::tiles::TileRegistry *tileRegistry;
 
 public:
@@ -32,7 +34,6 @@ public:
     void renderBackground(olc::PixelGameEngine *pge, olc::vf2d offset, olc::vf2d screenSize);
     void renderForeground(olc::PixelGameEngine *pge, olc::vf2d offset, olc::vf2d screenSize);
     bool collides(olc::vf2d coordinate, u32 &tileId);
-    rectu getTileBounds(u32 tileid);
 };
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef CPPDUNGEON_GFX_ANIMATION_HPP
 #define CPPDUNGEON_GFX_ANIMATION_HPP
 
+#define OLC_IGNORE_VEC2D
+#include "olcUTIL_Geometry2D.h"
 #include "olcPixelGameEngine.h"
 #include "../constants.hpp"
 #include <chrono>

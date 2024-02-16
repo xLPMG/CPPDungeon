@@ -1,6 +1,9 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
+#define OLC_IGNORE_VEC2D
+#include "olcUTIL_Geometry2D.h"
+
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
 

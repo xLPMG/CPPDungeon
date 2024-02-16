@@ -18,8 +18,7 @@ namespace cppdungeon
 class cppdungeon::world::tiles::TileRegistry
 {
 public:
-    static const u16 TILE_COUNT = 2;
-    cppdungeon::world::tiles::Tile *tiles[TILE_COUNT];
+    std::vector<cppdungeon::world::tiles::Tile*> tiles;
     TileRegistry();
     ~TileRegistry();
 };

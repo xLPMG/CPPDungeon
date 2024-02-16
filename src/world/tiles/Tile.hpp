@@ -2,6 +2,8 @@
 #define CPPDUNGEON_WORLD_TILES_TILE_HPP
 
 #include "../../constants.hpp"
+#define OLC_IGNORE_VEC2D
+#include "olcUTIL_Geometry2D.h"
 #include "olcPixelGameEngine.h"
 
 #include <memory>
