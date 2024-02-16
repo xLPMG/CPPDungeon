@@ -1,11 +1,21 @@
 #include "Map.hpp"
 #include "Generator.hpp"
 #include <iostream>
+#include <chrono>
 
 cppdungeon::world::Map::Map(i32 seed, i32 width, i32 height, olc::vf2d tileSize, cppdungeon::world::tiles::TileRegistry *tileRegistry)
     : width(width), height(height), tileSize(tileSize), tileRegistry(tileRegistry)
 {
-    cppdungeon::world::Generator::generate(seed, width, height, tiles);
+    auto start = std::chrono::high_resolution_clock::now();
+    generator = new cppdungeon::world::Generator(seed);
+    generator->generate(width, height, tiles);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "Map generation took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
+}
+
+cppdungeon::world::Map::~Map()
+{
+    delete generator;
 }
 
 void cppdungeon::world::Map::update(float fElapsedTime)

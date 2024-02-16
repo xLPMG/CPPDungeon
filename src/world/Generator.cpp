@@ -1,51 +1,145 @@
 #include "Generator.hpp"
-#define OLC_IGNORE_VEC2D
-#include "olcUTIL_Geometry2D.h"
 #include <random>
 #include <algorithm>
 #include <iostream>
 
-void cppdungeon::world::Generator::generate(i32 seed, i32 width, i32 height, std::vector<u16> &tiles)
+cppdungeon::world::Generator::Generator(i32 seed) : seed(seed)
+{
+}
+
+void cppdungeon::world::Generator::generate(i32 width, i32 height, std::vector<u16> &tiles)
 {
     srand(seed);
     tiles.clear();
     tiles.resize(width * height);
+    this->width = width;
+    this->height = height;
+    bounds.pos = {1, 1};
+    bounds.size = {width - 1, height - 1};
+    regions.resize(width * height);
+    generateRooms(tiles);
 
-    i32 numRooms = 10;
-    std::vector<olc::utils::geom2d::rect<i32>> roomList;
-    i32 meanRoomSize = 20;
-    i32 roomSizeVariance = 5;
-    std::default_random_engine generator;
-    std::normal_distribution<double> widthDist(meanRoomSize, roomSizeVariance);
-
-    for (i32 i = 0; i < numRooms; i++)
+    for (i32 y = bounds.pos.y; y < bounds.size.y; y += 2)
     {
-        olc::utils::geom2d::rect<i32> room;
+        for (i32 x = bounds.pos.x; x < bounds.size.x; x += 2)
+        {
+            if (tiles[x + y * width] != 0)
+                continue;
+            growMaze(olc::vi2d(x, y), tiles);
+        }
+    }
+}
 
+void cppdungeon::world::Generator::generateRooms(std::vector<u16> &tiles)
+{
+    rooms.clear();
+    std::default_random_engine generator;
+    std::normal_distribution<float> widthDist(meanRoomSize, roomSizeVariance);
+    for (i32 i = 0; i < numRoomTries; i++)
+    {
+        // generate room
         i32 w = (i32)widthDist(generator);
-        std::normal_distribution<double> heightDist(w, roomSizeVariance);
+        std::normal_distribution<float> heightDist(w, roomSizeVariance);
         i32 h = (i32)heightDist(generator);
-        i32 x = rand() % (width - w);
-        i32 y = rand() % (height - h);
+        if (w < 5 || h < 5)
+        {
+            continue;
+        }
 
+        i32 x = rand() % (bounds.size.x - w) + bounds.pos.x;
+        i32 y = rand() % (bounds.size.y - h) + bounds.pos.y;
+
+        olc::utils::geom2d::rect<i32> room;
         room.pos = {x, y};
         room.size = {w, h};
-        roomList.push_back((room));
-    }
-
-    std::sort(roomList.begin(), roomList.end(), [](const olc::utils::geom2d::rect<i32> &lhs, const olc::utils::geom2d::rect<i32> &rhs)
-              { return lhs.area() > rhs.area(); });
-
-    std::vector<olc::utils::geom2d::rect<i32>>::iterator iter;
-    for (iter = roomList.begin(); iter != roomList.end();)
-    {
-        for (i32 y = iter->pos.y; y < iter->pos.y + iter->size.y; y++)
+        bool doesOverlap = false;
+        for (auto &r : rooms)
         {
-            for (i32 x = iter->pos.x; x < iter->pos.x + iter->size.x; x++)
+
+            if (overlaps(room, r))
             {
-                tiles[y * width + x] = 1;
+                doesOverlap = true;
+                break;
             }
         }
-        ++iter;
+        if (!doesOverlap)
+        {
+            startRegion();
+            rooms.push_back(room);
+            for (i32 x = room.pos.x; x < room.pos.x + room.size.x; x++)
+            {
+                for (i32 y = room.pos.y; y < room.pos.y + room.size.y; y++)
+                {
+                    carve(olc::vi2d(x, y), 1, tiles);
+                }
+            }
+        }
     }
+}
+
+void cppdungeon::world::Generator::growMaze(olc::vi2d start, std::vector<u16> &tiles)
+{
+    std::vector<olc::vi2d> cells;
+    olc::vi2d lastDir = {0, 0};
+    startRegion();
+    carve(start, 1, tiles);
+    cells.push_back(start);
+
+    while (!cells.empty())
+    {
+        olc::vi2d cell = cells.back();
+        std::vector<olc::vi2d> unmadeCells;
+        for (auto &dir : dirs)
+        {
+            if (canCarve(cell, dir, tiles))
+            {
+                unmadeCells.push_back(dir);
+            }
+        }
+        if (!unmadeCells.empty())
+        {
+            // Based on how "windy" passages are, try to prefer carving in the
+            // same direction.
+            olc::vi2d dir;
+            if (std::find(unmadeCells.begin(), unmadeCells.end(), lastDir) != unmadeCells.end() && rand() % 100 > windingPercent)
+            {
+                dir = lastDir;
+            }
+            else
+            {
+                dir = unmadeCells[rand() % unmadeCells.size()];
+            }
+            
+            carve(cell + dir, 1, tiles);
+            carve(cell + dir * 2, 1, tiles);
+            cells.push_back(cell + dir * 2);
+            lastDir = dir;
+        }
+        else
+        {
+            // No adjacent uncarved cells.
+            cells.pop_back();
+            lastDir = {0,0};
+        }
+    }
+}
+
+bool cppdungeon::world::Generator::canCarve(olc::vi2d pos, olc::vi2d direction, std::vector<u16> &tiles)
+{
+  if(!contains(bounds, pos + direction * 3))
+  {
+    return false;
+  }
+
+  return tiles[(pos + direction * 2).y * width + (pos + direction * 2).x] == 0;
+}
+
+void cppdungeon::world::Generator::startRegion()
+{
+    currentRegion++;
+}
+
+void cppdungeon::world::Generator::carve(olc::vi2d pos, u16 tile, std::vector<u16> &tiles)
+{
+    tiles[pos.y * width + pos.x] = tile;
 }
