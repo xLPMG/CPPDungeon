@@ -39,8 +39,13 @@ void cppdungeon::world::Generator::generateRooms(std::vector<u16> &tiles)
     {
         // generate room
         i32 w = (i32)widthDist(generator);
-        std::normal_distribution<float> heightDist(w, roomSizeVariance);
+        std::normal_distribution<float> heightDist(w, roomSizeVariance/2);
         i32 h = (i32)heightDist(generator);
+        if(w%2 == 0)
+            w++;
+        if(h%2 == 0)
+            h++;
+
         if (w < 5 || h < 5)
         {
             continue;
@@ -48,15 +53,23 @@ void cppdungeon::world::Generator::generateRooms(std::vector<u16> &tiles)
 
         i32 x = rand() % (bounds.size.x - w) + bounds.pos.x;
         i32 y = rand() % (bounds.size.y - h) + bounds.pos.y;
+        if(x%2 == 0)
+            x++;
+        if(y%2 == 0)
+            y++;
 
         olc::utils::geom2d::rect<i32> room;
         room.pos = {x, y};
         room.size = {w, h};
+
+        olc::utils::geom2d::rect<i32> roomWithPadding;
+        roomWithPadding.pos = {x - 4, y - 4};
+        roomWithPadding.size = {w + 8, h + 8};
+
         bool doesOverlap = false;
         for (auto &r : rooms)
         {
-
-            if (overlaps(room, r))
+            if (overlaps(roomWithPadding, r))
             {
                 doesOverlap = true;
                 break;

@@ -31,7 +31,7 @@ private:
 
     // room generation
     std::vector<olc::utils::geom2d::rect<i32>> rooms;
-    i32 numRoomTries = 400;
+    i32 numRoomTries = 500;
     f32 meanRoomSize = 15;
     f32 roomSizeVariance = 5;
     /// For each open position in the dungeon, the index of the connected region
