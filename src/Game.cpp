@@ -10,7 +10,7 @@
 bool cppdungeon::Game::OnUserCreate()
 {
     tileRegistry = new cppdungeon::world::tiles::TileRegistry();
-    map = new world::Map(1000, 101, 101, olc::vf2d{16, 16}, tileRegistry);
+    map = new world::Map(1000, 71, 71, olc::vf2d{16, 16}, tileRegistry);
     camera = new cppdungeon::gfx::Camera({0, 0});
     player = new cppdungeon::entities::Player({48, 32});
     entities.push_back(player);

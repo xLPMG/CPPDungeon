@@ -31,25 +31,11 @@ private:
 
     // room generation
     std::vector<olc::utils::geom2d::rect<i32>> rooms;
-    i32 numRoomTries = 500;
+    i32 numRoomTries = 1000;
     f32 meanRoomSize = 15;
-    f32 roomSizeVariance = 5;
-    /// For each open position in the dungeon, the index of the connected region
-    /// that that position is a part of.
-    std::vector<i32> regions;
-    /// The index of the current region being carved.
-    i32 currentRegion = -1;
-
-    /// The inverse chance of adding a connector between two regions that have
-    /// already been joined. Increasing this leads to more loosely connected
-    /// dungeons.
-    i32 extraConnectorChance = 20;
-    i32 windingPercent = 0;
+    f32 roomSizeVariance = 10;
 
     void generateRooms(std::vector<u16> &tiles);
-    void growMaze(olc::vi2d start, std::vector<u16> &tiles);
-    void startRegion();
-    bool canCarve(olc::vi2d pos, olc::vi2d direction, std::vector<u16> &tiles);
     void carve(olc::vi2d pos, u16 tile, std::vector<u16> &tiles);
 
 public:
