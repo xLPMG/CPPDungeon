@@ -11,8 +11,6 @@ INCFLAGS += -I/usr/local/include
 CXXFLAGS  = -std=c++20
 CXXFLAGS += -O2
 CXXFLAGS += -g
-CXXFLAGS += -fbracket-depth=1024
-CXXFLAGS += -fmacro-backtrace-limit=0
 CXXFLAGS += -Wall
 CXXFLAGS += -Wextra
 CXXFLAGS += -Wpedantic

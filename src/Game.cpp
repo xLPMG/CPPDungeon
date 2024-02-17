@@ -3,14 +3,14 @@
 
 #if WIN32
 #include <windows.h>
-#else
+#elif __APPLE__
 #include <CoreGraphics/CGDisplayConfiguration.h>
 #endif
 
 bool cppdungeon::Game::OnUserCreate()
 {
     tileRegistry = new cppdungeon::world::tiles::TileRegistry();
-    map = new world::Map(1000, 71, 71, olc::vf2d{16, 16}, tileRegistry);
+    map = new world::Map(1000, 99, 99, olc::vf2d{16, 16}, tileRegistry);
     camera = new cppdungeon::gfx::Camera({0, 0});
     player = new cppdungeon::entities::Player({48, 32});
     entities.push_back(player);
@@ -29,6 +29,11 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     i8 x = moveRight - moveLeft;
     i8 y = moveDown - moveUp;
     player->move(&x, &y, sprinting, &fElapsedTime, map);
+
+    if(GetKey(olc::Key::SPACE).bHeld){
+        map->regenerate(seed);
+        seed++;
+    }
 
     // UPDATE
     for (auto &entity : entities)
@@ -67,12 +72,14 @@ int main()
 #if WIN32
     width = (int)GetSystemMetrics(SM_CXSCREEN);
     height = (int)GetSystemMetrics(SM_CYSCREEN);
-#else
+#elif __APPLE__
     auto mainDisplayId = CGMainDisplayID();
     width = CGDisplayPixelsWide(mainDisplayId);
     height = CGDisplayPixelsHigh(mainDisplayId);
+#else
+    width = 1920;
+    height = 1080;
 #endif
-
     cppdungeon::Game demo;
     if (demo.Construct(width / 1, height / 1, 1, 1))
         demo.Start();

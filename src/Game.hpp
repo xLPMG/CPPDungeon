@@ -33,6 +33,7 @@ private:
     std::vector<entities::Entity *> entities;
     cppdungeon::world::tiles::TileRegistry* tileRegistry;
     world::Map* map;
+    i32 seed = 1;
 
     entities::Entity *player;
     

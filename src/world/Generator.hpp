@@ -51,7 +51,7 @@ private:
             return (unsigned int)((ix * 73856093) ^ (iy * 19349663)) % HASH_SIZE;
         }
     };
-    i32 loopProbability = 10;
+    i32 loopProbability = 0;
 
     void generateRooms(std::vector<u16> &tiles);
     void carve(olc::vi2d pos,
@@ -65,13 +65,14 @@ private:
                    std::vector<u16> &tiles);
     void constructDelauneyTriangles(std::map<olc::vi2d,
                                              std::vector<olc::vi2d>> &graph);
-    void bfsSpanningTree(std::map<olc::vi2d, std::vector<olc::vi2d>> &graph,
+    void dfsSpanningTree(std::map<olc::vi2d, std::vector<olc::vi2d>> &graph,
                          const olc::vi2d &start,
                          std::vector<std::pair<olc::vi2d, olc::vi2d>> &spanningTree);
+    void decorateWalls(std::vector<u16> &tiles);
 
 public:
-    Generator(i32 seed);
-    void generate(i32 width,
+    void generate(i32 seed,
+                  i32 width,
                   i32 height,
                   std::vector<u16> &tiles);
 };

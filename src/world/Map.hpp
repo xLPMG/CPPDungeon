@@ -29,14 +29,15 @@ private:
 
 public:
     olc::vf2d tileSize = {16, 16};
-    i32 width = 100;
-    i32 height = 100;
+    i32 width = 99;
+    i32 height = 99;
     Map(i32 seed, i32 width, i32 height, olc::vf2d tileSize, cppdungeon::world::tiles::TileRegistry *tileRegistry);
     ~Map();
     void update(float fElapsedTime);
     void renderBackground(olc::PixelGameEngine *pge, olc::vf2d offset, olc::vf2d screenSize);
     void renderForeground(olc::PixelGameEngine *pge, olc::vf2d offset, olc::vf2d screenSize);
     bool collides(olc::vf2d coordinate, u32 &tileId);
+    void regenerate(i32 seed);
 };
 
 #endif

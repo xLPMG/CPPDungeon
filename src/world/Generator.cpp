@@ -6,14 +6,11 @@
 #include <delaunator.hpp>
 #include <vector>
 #include <queue>
+#include <stack>
 #include <unordered_set>
 #include <cassert>
 
-cppdungeon::world::Generator::Generator(i32 seed) : seed(seed)
-{
-}
-
-void cppdungeon::world::Generator::generate(i32 width, i32 height, std::vector<u16> &tiles)
+void cppdungeon::world::Generator::generate(i32 seed, i32 width, i32 height, std::vector<u16> &tiles)
 {
     srand(seed);
     tiles.clear();
@@ -21,7 +18,7 @@ void cppdungeon::world::Generator::generate(i32 width, i32 height, std::vector<u
     this->width = width;
     this->height = height;
     bounds.pos = {1, 1};
-    bounds.size = {width - 1, height - 1};
+    bounds.size = {width - 2, height - 2};
 
     generateRooms(tiles);
 
@@ -38,7 +35,7 @@ void cppdungeon::world::Generator::generate(i32 width, i32 height, std::vector<u
     constructDelauneyTriangles(graph);
 
     std::vector<std::pair<olc::vi2d, olc::vi2d>> spanningTree;
-    bfsSpanningTree(graph, graph.begin()->first, spanningTree);
+    dfsSpanningTree(graph, graph.begin()->first, spanningTree);
 
     for (auto &edge : spanningTree)
     {
@@ -118,8 +115,11 @@ void cppdungeon::world::Generator::connectPoints(olc::vi2d p1, olc::vi2d p2, std
             int dy = abs(p2.y - p1.y);
             int signY = (p2.y - p1.y > 0) ? 1 : -1;
 
-            for (int i = 0; i <= dy; ++i)
+            for (int i = 0; i <= dy; ++i){
+                carve({p1.x - 1, p1.y + i * signY}, 1, tiles);
                 carve({p1.x, p1.y + i * signY}, 1, tiles);
+                carve({p1.x + 1, p1.y + i * signY}, 1, tiles);
+            }
         }
         // If aligned vertically
         else
@@ -129,7 +129,11 @@ void cppdungeon::world::Generator::connectPoints(olc::vi2d p1, olc::vi2d p2, std
             int signX = (p2.x - p1.x > 0) ? 1 : -1;
 
             for (int i = 0; i <= dx; ++i)
+            {
+                carve({p1.x + i * signX, p1.y - 1}, 1, tiles);
                 carve({p1.x + i * signX, p1.y}, 1, tiles);
+                carve({p1.x + i * signX, p1.y + 1}, 1, tiles);
+            }
         }
     }
     // If not aligned horizontally or vertically
@@ -152,7 +156,8 @@ void cppdungeon::world::Generator::connectPoints(olc::vi2d p1, olc::vi2d p2, std
             int dy = abs(p2.y - p1.y);
             int signY = (p2.y - p1.y > 0) ? 1 : -1;
 
-            for (int i = 0; i <= dy; ++i){
+            for (int i = 0; i <= dy; ++i)
+            {
                 carve({p2.x - 1, p1.y + i * signY}, 1, tiles);
                 carve({p2.x, p1.y + i * signY}, 1, tiles);
                 carve({p2.x + 1, p1.y + i * signY}, 1, tiles);
@@ -164,7 +169,8 @@ void cppdungeon::world::Generator::connectPoints(olc::vi2d p1, olc::vi2d p2, std
             int dy = abs(p2.y - p1.y);
             int signY = (p2.y - p1.y > 0) ? 1 : -1;
 
-            for (int i = 0; i <= dy; ++i){
+            for (int i = 0; i <= dy; ++i)
+            {
                 carve({p1.x - 1, p1.y + i * signY}, 1, tiles);
                 carve({p1.x, p1.y + i * signY}, 1, tiles);
                 carve({p1.x + 1, p1.y + i * signY}, 1, tiles);
@@ -173,7 +179,8 @@ void cppdungeon::world::Generator::connectPoints(olc::vi2d p1, olc::vi2d p2, std
             int dx = abs(p2.x - p1.x);
             int signX = (p2.x - p1.x > 0) ? 1 : -1;
 
-            for (int i = 0; i <= dx; ++i){
+            for (int i = 0; i <= dx; ++i)
+            {
                 carve({p1.x + i * signX, p2.y - 1}, 1, tiles);
                 carve({p1.x + i * signX, p2.y}, 1, tiles);
                 carve({p1.x + i * signX, p2.y + 1}, 1, tiles);
@@ -225,26 +232,26 @@ void cppdungeon::world::Generator::constructDelauneyTriangles(std::map<olc::vi2d
     }
 }
 
-void cppdungeon::world::Generator::bfsSpanningTree(std::map<olc::vi2d, std::vector<olc::vi2d>> &graph, const olc::vi2d &start, std::vector<std::pair<olc::vi2d, olc::vi2d>> &spanningTree)
+void cppdungeon::world::Generator::dfsSpanningTree(std::map<olc::vi2d, std::vector<olc::vi2d>> &graph, const olc::vi2d &start, std::vector<std::pair<olc::vi2d, olc::vi2d>> &spanningTree)
 {
     spanningTree.clear();
-    std::queue<olc::vi2d> q;
+    std::stack<olc::vi2d> s;
     std::unordered_set<olc::vi2d, VI2dHash> visited;
 
-    q.push(start);
+    s.push(start);
     visited.insert(start);
 
-    while (!q.empty())
+    while (!s.empty())
     {
-        olc::vi2d current = q.front();
-        q.pop();
+        olc::vi2d current = s.top();
+        s.pop();
         for (const olc::vi2d &neighbor : graph.at(current))
         {
             if (visited.find(neighbor) == visited.end())
             {
-                // add node that we havent visited yet
+                // add node that we haven't visited yet
                 spanningTree.push_back({current, neighbor});
-                q.push(neighbor);
+                s.push(neighbor);
                 visited.insert(neighbor);
             }
             else if (rand() % 100 < loopProbability)
