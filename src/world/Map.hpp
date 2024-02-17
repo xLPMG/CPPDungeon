@@ -23,7 +23,8 @@ class cppdungeon::world::Map
     using Tile = cppdungeon::world::tiles::Tile;
 
 private:
-    std::vector<u16> tiles;
+    std::vector<u16> tilesForeground;
+    std::vector<u16> tilesBackground;
     cppdungeon::world::tiles::TileRegistry *tileRegistry;
     cppdungeon::world::Generator *generator;
 

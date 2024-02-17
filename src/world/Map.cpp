@@ -8,7 +8,7 @@ cppdungeon::world::Map::Map(i32 seed, i32 width, i32 height, olc::vf2d tileSize,
 {
     auto start = std::chrono::high_resolution_clock::now();
     generator = new cppdungeon::world::Generator();
-    generator->generate(seed, width, height, tiles);
+    generator->generate(seed, width, height, tilesBackground, tilesForeground);
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << "Map generation took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
 }
@@ -33,9 +33,9 @@ void cppdungeon::world::Map::renderBackground(olc::PixelGameEngine *pge, olc::vf
     {
         for (int x = start.x; x < end.x; x++)
         {
-            if (tiles[y * width + x] > 0)
+            if (tilesBackground[y * width + x] > 0)
             {
-                tileRegistry->tiles[tiles[y * width + x]]->render(pge, olc::vi2d(x, y) * tileSize - offset);
+                tileRegistry->tiles[tilesBackground[y * width + x]]->render(pge, olc::vi2d(x, y) * tileSize - offset);
             }
         }
     }
@@ -44,6 +44,22 @@ void cppdungeon::world::Map::renderBackground(olc::PixelGameEngine *pge, olc::vf
 
 void cppdungeon::world::Map::renderForeground(olc::PixelGameEngine *pge, olc::vf2d offset, olc::vf2d screenSize)
 {
+    pge->SetPixelMode(olc::Pixel::MASK);
+    olc::vi2d offsetByTiles = offset / tileSize;
+    olc::vi2d start = {std::max(0, (int)offsetByTiles.x), std::max(0, (int)offsetByTiles.y)};
+    olc::vi2d end = {std::min(width, (int)((offset.x + screenSize.x) / tileSize.x) + 1), std::min(height, (int)((offset.y + screenSize.y) / tileSize.y) + 1)};
+
+    for (int y = start.y; y < end.y; y++)
+    {
+        for (int x = start.x; x < end.x; x++)
+        {
+            if (tilesForeground[y * width + x] > 0)
+            {
+                tileRegistry->tiles[tilesForeground[y * width + x]]->render(pge, olc::vi2d(x, y) * tileSize - offset);
+            }
+        }
+    }
+    pge->SetPixelMode(olc::Pixel::NORMAL);
 }
 
 bool cppdungeon::world::Map::collides(olc::vf2d coordinate, cppdungeon::u32 &tileId)
@@ -54,10 +70,10 @@ bool cppdungeon::world::Map::collides(olc::vf2d coordinate, cppdungeon::u32 &til
         return true;
     }
     tileId = (u32)(coordinate.x / tileSize.x) + (u32)(coordinate.y / tileSize.y) * width;
-    return tileRegistry->tiles[tiles[tileId]]->getSolid();
+    return tileRegistry->tiles[tilesBackground[tileId]]->getSolid();
 }
 
 void cppdungeon::world::Map::regenerate(i32 seed)
 {
-    generator->generate(seed, width, height, tiles);
+    generator->generate(seed, width, height, tilesBackground, tilesForeground);
 }

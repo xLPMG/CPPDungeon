@@ -4,32 +4,31 @@
 #include <iostream>
 
 #include <delaunator.hpp>
-#include <vector>
-#include <queue>
 #include <stack>
 #include <unordered_set>
-#include <cassert>
+#include <iostream>
 
-void cppdungeon::world::Generator::generate(i32 seed, i32 width, i32 height, std::vector<u16> &tiles)
+
+
+void cppdungeon::world::Generator::generate(i32 seed, i32 width, i32 height, std::vector<u16> &tilesBackground, std::vector<u16> &tilesForeground)
 {
     srand(seed);
-    tiles.clear();
-    tiles.resize(width * height);
+
+    tilesBackground.clear();
+    tilesBackground.resize(width * height);
+    std::fill(tilesBackground.begin(), tilesBackground.end(), 0);
+
+    tilesForeground.clear();
+    tilesForeground.resize(width * height);
+    std::fill(tilesForeground.begin(), tilesForeground.end(), 0);
+
     this->width = width;
     this->height = height;
     bounds.pos = {1, 1};
     bounds.size = {width - 2, height - 2};
 
-    generateRooms(tiles);
+    generateRooms(tilesBackground);
 
-    for (i32 y = bounds.pos.y; y < bounds.size.y; y += 2)
-    {
-        for (i32 x = bounds.pos.x; x < bounds.size.x; x += 2)
-        {
-            if (tiles[x + y * width] != 0)
-                continue;
-        }
-    }
     // generate paths
     std::map<olc::vi2d, std::vector<olc::vi2d>> graph;
     constructDelauneyTriangles(graph);
@@ -41,8 +40,10 @@ void cppdungeon::world::Generator::generate(i32 seed, i32 width, i32 height, std
     {
         olc::vi2d start = edge.first;
         olc::vi2d end = edge.second;
-        connectPoints(start, end, tiles);
+        connectPoints(start, end, tilesBackground);
     }
+
+    decorateWalls(tilesBackground, tilesForeground);
 }
 
 void cppdungeon::world::Generator::generateRooms(std::vector<u16> &tiles)
@@ -259,6 +260,35 @@ void cppdungeon::world::Generator::dfsSpanningTree(std::map<olc::vi2d, std::vect
                 // add node that we have visited before
                 spanningTree.push_back({current, neighbor});
             }
+        }
+    }
+}
+
+void cppdungeon::world::Generator::decorateWalls(std::vector<u16> &tilesBackground, std::vector<u16> &tilesForeground)
+{
+    for (i32 y = bounds.pos.y; y < bounds.pos.y + bounds.size.y; y++)
+    {
+        for (i32 x = bounds.pos.x; x < bounds.pos.x + bounds.size.x; x++)
+        {
+            // if (tilesBackground[y * width + x] == 0)
+            // {
+            //     if (tilesBackground[(y - 1) * width + x] > 0)
+            //     {
+            //         tilesBackground[y * width + x] = 2;
+            //     }
+            //     else if (tilesBackground[(y + 1) * width + x] > 0)
+            //     {
+            //         tilesBackground[y * width + x] = 2;
+            //     }
+            //     else if (tilesBackground[y * width + x - 1] > 0)
+            //     {
+            //         tilesBackground[y * width + x] = 2;
+            //     }
+            //     else if (tilesBackground[y * width + x + 1] > 0)
+            //     {
+            //         tilesBackground[y * width + x] = 2;
+            //     }
+            // }
         }
     }
 }

@@ -68,13 +68,15 @@ private:
     void dfsSpanningTree(std::map<olc::vi2d, std::vector<olc::vi2d>> &graph,
                          const olc::vi2d &start,
                          std::vector<std::pair<olc::vi2d, olc::vi2d>> &spanningTree);
-    void decorateWalls(std::vector<u16> &tiles);
+    void decorateWalls(std::vector<u16> &tilesBackground,
+                       std::vector<u16> &tilesForeground);
 
 public:
     void generate(i32 seed,
                   i32 width,
                   i32 height,
-                  std::vector<u16> &tiles);
+                  std::vector<u16> &tilesBackground,
+                  std::vector<u16> &tilesForeground);
 };
 
 #endif

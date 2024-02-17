@@ -1,5 +1,6 @@
 #include "Game.hpp"
 #include "entities/Player.hpp"
+#include "world/Map.hpp"
 
 #if WIN32
 #include <windows.h>
@@ -14,7 +15,6 @@ bool cppdungeon::Game::OnUserCreate()
     camera = new cppdungeon::gfx::Camera({0, 0});
     player = new cppdungeon::entities::Player({48, 32});
     entities.push_back(player);
-
     return true;
 }
 
@@ -50,6 +50,8 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     {
         entity->render(this, camera->getOffset());
     }
+    map->renderForeground(this, camera->getOffset(), GetScreenSize());
+
     return true;
 }
 
