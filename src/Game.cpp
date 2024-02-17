@@ -15,6 +15,7 @@ bool cppdungeon::Game::OnUserCreate()
     camera = new cppdungeon::gfx::Camera({0, 0});
     player = new cppdungeon::entities::Player({48, 32});
     entities.push_back(player);
+    player->setPosition(map->getSpawnPoint());
     return true;
 }
 
@@ -32,6 +33,7 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
 
     if(GetKey(olc::Key::SPACE).bHeld){
         map->regenerate(seed);
+        player->setPosition(map->getSpawnPoint());
         seed++;
     }
 
@@ -83,7 +85,7 @@ int main()
     height = 1080;
 #endif
     cppdungeon::Game demo;
-    if (demo.Construct(width / 1, height / 1, 1, 1))
+    if (demo.Construct(width / 4, height / 4, 4, 4))
         demo.Start();
 
     return 0;

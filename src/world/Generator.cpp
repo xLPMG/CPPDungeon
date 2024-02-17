@@ -8,9 +8,7 @@
 #include <unordered_set>
 #include <iostream>
 
-
-
-void cppdungeon::world::Generator::generate(i32 seed, i32 width, i32 height, std::vector<u16> &tilesBackground, std::vector<u16> &tilesForeground)
+void cppdungeon::world::Generator::generate(i32 seed, i32 width, i32 height, std::vector<u16> &tilesBackground, std::vector<u16> &tilesForeground, olc::vf2d &spawnPos)
 {
     srand(seed);
 
@@ -24,10 +22,12 @@ void cppdungeon::world::Generator::generate(i32 seed, i32 width, i32 height, std
 
     this->width = width;
     this->height = height;
-    bounds.pos = {1, 1};
-    bounds.size = {width - 2, height - 2};
+    bounds.pos = {2, 2};
+    bounds.size = {width - 4, height - 4};
 
     generateRooms(tilesBackground);
+    olc::utils::geom2d::rect<i32> spawnRoom = rooms[rand() % rooms.size()];
+    spawnPos = spawnRoom.middle();
 
     // generate paths
     std::map<olc::vi2d, std::vector<olc::vi2d>> graph;
@@ -43,7 +43,46 @@ void cppdungeon::world::Generator::generate(i32 seed, i32 width, i32 height, std
         connectPoints(start, end, tilesBackground);
     }
 
-    decorateWalls(tilesBackground, tilesForeground);
+    // fill holes
+    for (i32 x = bounds.pos.x; x < bounds.pos.x + bounds.size.x; x++)
+    {
+        for (i32 y = bounds.pos.y; y < bounds.pos.y + bounds.size.y; y++)
+        {
+            i32 self = idx(x, y, width);
+            if (tilesBackground[self] == 0)
+            {
+                // one tile in each direction
+                if (tilesBackground[idx(x + 1, y, width)] > 0 && tilesBackground[idx(x - 1, y, width)] > 0)
+                {
+                    tilesBackground[self] = 1;
+                }
+                else if (tilesBackground[idx(x, y + 1, width)] > 0 && tilesBackground[idx(x, y - 1, width)] > 0)
+                {
+                    tilesBackground[self] = 1;
+
+                    // one and two tiles
+                }
+                else if (tilesBackground[idx(x, y + 2, width)] > 0 && tilesBackground[idx(x, y - 1, width)] > 0)
+                {
+                    tilesBackground[self] = 1;
+                }
+                else if (tilesBackground[idx(x, y + 1, width)] > 0 && tilesBackground[idx(x, y - 2, width)] > 0)
+                {
+                    tilesBackground[self] = 1;
+                }
+                else if (tilesBackground[idx(x + 2, y, width)] > 0 && tilesBackground[idx(x - 1, y, width)] > 0)
+                {
+                    tilesBackground[self] = 1;
+                }
+                else if (tilesBackground[idx(x + 1, y, width)] > 0 && tilesBackground[idx(x - 2, y, width)] > 0)
+                {
+                    tilesBackground[self] = 1;
+                }
+            }
+        }
+    }
+
+    buildWalls(tilesBackground, tilesForeground);
 }
 
 void cppdungeon::world::Generator::generateRooms(std::vector<u16> &tiles)
@@ -116,7 +155,8 @@ void cppdungeon::world::Generator::connectPoints(olc::vi2d p1, olc::vi2d p2, std
             int dy = abs(p2.y - p1.y);
             int signY = (p2.y - p1.y > 0) ? 1 : -1;
 
-            for (int i = 0; i <= dy; ++i){
+            for (int i = 0; i <= dy; ++i)
+            {
                 carve({p1.x - 1, p1.y + i * signY}, 1, tiles);
                 carve({p1.x, p1.y + i * signY}, 1, tiles);
                 carve({p1.x + 1, p1.y + i * signY}, 1, tiles);
@@ -146,7 +186,8 @@ void cppdungeon::world::Generator::connectPoints(olc::vi2d p1, olc::vi2d p2, std
             int dx = abs(p2.x - p1.x);
             int signX = (p2.x - p1.x > 0) ? 1 : -1;
 
-            for (int i = 0; i <= dx; ++i)
+            // dx+1 to get the corner
+            for (int i = 0; i <= dx + 1; ++i)
             {
                 carve({p1.x + i * signX, p1.y - 1}, 1, tiles);
                 carve({p1.x + i * signX, p1.y}, 1, tiles);
@@ -170,7 +211,8 @@ void cppdungeon::world::Generator::connectPoints(olc::vi2d p1, olc::vi2d p2, std
             int dy = abs(p2.y - p1.y);
             int signY = (p2.y - p1.y > 0) ? 1 : -1;
 
-            for (int i = 0; i <= dy; ++i)
+            // dx+1 to get the corner
+            for (int i = 0; i <= dy + 1; ++i)
             {
                 carve({p1.x - 1, p1.y + i * signY}, 1, tiles);
                 carve({p1.x, p1.y + i * signY}, 1, tiles);
@@ -264,31 +306,116 @@ void cppdungeon::world::Generator::dfsSpanningTree(std::map<olc::vi2d, std::vect
     }
 }
 
-void cppdungeon::world::Generator::decorateWalls(std::vector<u16> &tilesBackground, std::vector<u16> &tilesForeground)
+void cppdungeon::world::Generator::buildWalls(std::vector<u16> &tilesBackground, std::vector<u16> &tilesForeground)
 {
-    for (i32 y = bounds.pos.y; y < bounds.pos.y + bounds.size.y; y++)
+
+    std::vector<u16> oldBackground = tilesBackground;
+
+    for (i32 x = bounds.pos.x; x < bounds.pos.x + bounds.size.x; x++)
     {
-        for (i32 x = bounds.pos.x; x < bounds.pos.x + bounds.size.x; x++)
+        for (i32 y = bounds.pos.y; y < bounds.pos.y + bounds.size.y; y++)
         {
-            // if (tilesBackground[y * width + x] == 0)
-            // {
-            //     if (tilesBackground[(y - 1) * width + x] > 0)
-            //     {
-            //         tilesBackground[y * width + x] = 2;
-            //     }
-            //     else if (tilesBackground[(y + 1) * width + x] > 0)
-            //     {
-            //         tilesBackground[y * width + x] = 2;
-            //     }
-            //     else if (tilesBackground[y * width + x - 1] > 0)
-            //     {
-            //         tilesBackground[y * width + x] = 2;
-            //     }
-            //     else if (tilesBackground[y * width + x + 1] > 0)
-            //     {
-            //         tilesBackground[y * width + x] = 2;
-            //     }
-            // }
+            olc::vi2d pos = {x, y};
+            i32 self = idx(pos, width);
+            if (oldBackground[self] == 0)
+                continue;
+
+            i32 neighborN = idx(pos + N, width);
+            i32 neighborS = idx(pos + S, width);
+            i32 neighborW = idx(pos + W, width);
+            i32 neighborE = idx(pos + E, width);
+            i32 neighborNW = idx(pos + N + W, width);
+            i32 neighborNE = idx(pos + N + E, width);
+            i32 neighborSW = idx(pos + S + W, width);
+            i32 neighborSE = idx(pos + S + E, width);
+
+            // top middle wall
+            if (oldBackground[neighborN] == 0 && oldBackground[neighborNW] == 0 && oldBackground[neighborNE] == 0 && oldBackground[neighborW] > 0 && oldBackground[neighborE] > 0)
+            {
+
+                tilesBackground[neighborN] = 2;
+                tilesBackground[idx(pos + N + N, width)] = 5;
+            }
+            // bottom middle wall
+            if (oldBackground[neighborS] == 0 && oldBackground[neighborSW] == 0 && oldBackground[neighborSE] == 0 && oldBackground[neighborW] > 0 && oldBackground[neighborE] > 0)
+            {
+
+                tilesBackground[neighborS] = 18;
+                tilesForeground[self] = 19;
+            }
+            // left center wall
+            else if (oldBackground[neighborW] == 0 && oldBackground[neighborNW] == 0 && oldBackground[neighborSW] == 0 && oldBackground[neighborN] > 0 && oldBackground[neighborS] > 0)
+            {
+                tilesBackground[neighborW] = 10;
+            }
+            // right center wall
+            else if (oldBackground[neighborE] == 0 && oldBackground[neighborNE] == 0 && oldBackground[neighborSE] == 0 && oldBackground[neighborN] > 0 && oldBackground[neighborS] > 0)
+            {
+                tilesBackground[neighborE] = 3;
+            }
+            // top left outer corner
+            else if (oldBackground[neighborN] == 0 && oldBackground[neighborW] == 0 && oldBackground[neighborNW] == 0)
+            {
+                tilesBackground[neighborN] = 2;
+                tilesBackground[idx(pos + N + N, width)] = 5;
+
+                tilesBackground[neighborW] = 10;
+                tilesBackground[neighborNW] = 10;
+                tilesBackground[idx(pos + N + N + W, width)] = 7;
+            }
+            // top right outer corner
+            else if (oldBackground[neighborN] == 0 && oldBackground[neighborE] == 0 && oldBackground[neighborNE] == 0)
+            {
+                tilesBackground[neighborN] = 2;
+                tilesBackground[idx(pos + N + N, width)] = 5;
+
+                tilesBackground[neighborE] = 3;
+                tilesBackground[neighborNE] = 3;
+                tilesBackground[idx(pos + N + N + E, width)] = 6;
+            }
+            // bottom left outer corner
+            else if (oldBackground[neighborS] == 0 && oldBackground[neighborW] == 0 && oldBackground[neighborSW] == 0)
+            {
+                tilesBackground[neighborS] = 18;
+                tilesForeground[self] = 19;
+
+                tilesBackground[neighborSW] = 9;
+                tilesBackground[neighborW] = 10;
+            }
+            // bottom right outer corner
+            else if (oldBackground[neighborS] == 0 && oldBackground[neighborE] == 0 && oldBackground[neighborSE] == 0)
+            {
+                tilesBackground[neighborS] = 18;
+                tilesForeground[self] = 19;
+
+                tilesBackground[neighborSE] = 8;
+                tilesBackground[neighborE] = 3;
+
+            }
+            // top left inner corner
+            else if (oldBackground[neighborN] > 0 && oldBackground[neighborW] > 0 && oldBackground[neighborNW] == 0)
+            {
+                tilesBackground[neighborNW] = 21;
+                tilesBackground[idx(pos + N + N + W, width)] = 15;
+            }
+            // top right inner corner
+            else if (oldBackground[neighborN] > 0 && oldBackground[neighborE] > 0 && oldBackground[neighborNE] == 0)
+            {
+                tilesBackground[neighborNE] = 20;
+                tilesBackground[idx(pos + N + N + E, width)] = 16;
+            }
+            // bottom left inner corner
+            else if (oldBackground[neighborS] > 0 && oldBackground[neighborW] > 0 && oldBackground[neighborSW] == 0)
+            {
+                tilesForeground[neighborW] = 13;
+                tilesBackground[neighborSW] = 12;
+            }
+            // bottom right inner corner
+            else if (oldBackground[neighborS] > 0 && oldBackground[neighborE] > 0 && oldBackground[neighborSE] == 0)
+            {
+                tilesForeground[neighborE] = 14;
+                tilesBackground[neighborSE] = 17;
+            }
         }
     }
 }

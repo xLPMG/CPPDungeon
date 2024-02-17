@@ -10,8 +10,3 @@ Tile::Tile(std::string texture)
 Tile::~Tile()
 {
 }
-
-void Tile::render(olc::PixelGameEngine* pge, olc::vf2d position)
-{
-    pge->DrawSprite(position, texture.get());
-}

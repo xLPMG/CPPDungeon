@@ -27,6 +27,11 @@ namespace cppdungeon
             virtual void render(olc::PixelGameEngine *pge, olc::vf2d offset) = 0;
             virtual void move(i8 *x, i8 *y, bool sprinting, f32 *deltaTime, cppdungeon::world::Map* map) = 0;
 
+            void setPosition(olc::vf2d position)
+            {
+                this->position = position;
+            };
+
             olc::vf2d getPosition()
             {
                 return this->position;

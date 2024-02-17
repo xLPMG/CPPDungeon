@@ -8,9 +8,9 @@ cppdungeon::world::Map::Map(i32 seed, i32 width, i32 height, olc::vf2d tileSize,
 {
     auto start = std::chrono::high_resolution_clock::now();
     generator = new cppdungeon::world::Generator();
-    generator->generate(seed, width, height, tilesBackground, tilesForeground);
+    generator->generate(seed, width, height, tilesBackground, tilesForeground, spawnPoint);
     auto end = std::chrono::high_resolution_clock::now();
-    std::cout << "Map generation took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
+    std::cout << "Map generation took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << std::endl;
 }
 
 cppdungeon::world::Map::~Map()
@@ -75,5 +75,10 @@ bool cppdungeon::world::Map::collides(olc::vf2d coordinate, cppdungeon::u32 &til
 
 void cppdungeon::world::Map::regenerate(i32 seed)
 {
-    generator->generate(seed, width, height, tilesBackground, tilesForeground);
+    generator->generate(seed, width, height, tilesBackground, tilesForeground, spawnPoint);
+}
+
+olc::vf2d cppdungeon::world::Map::getSpawnPoint()
+{
+    return spawnPoint* tileSize;
 }

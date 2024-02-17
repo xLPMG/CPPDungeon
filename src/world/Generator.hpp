@@ -18,11 +18,11 @@ namespace cppdungeon
 class cppdungeon::world::Generator
 {
 private:
-    const olc::vi2d UP = {0, -1};
-    const olc::vi2d DOWN = {0, 1};
-    const olc::vi2d LEFT = {-1, 0};
-    const olc::vi2d RIGHT = {1, 0};
-    const std::vector<olc::vi2d> dirs = {UP, DOWN, LEFT, RIGHT};
+    const olc::vi2d N = {0, -1};
+    const olc::vi2d S = {0, 1};
+    const olc::vi2d W = {-1, 0};
+    const olc::vi2d E = {1, 0};
+    const std::vector<olc::vi2d> dirs = {N, S, W, E};
 
     // map data
     i32 seed;
@@ -68,7 +68,7 @@ private:
     void dfsSpanningTree(std::map<olc::vi2d, std::vector<olc::vi2d>> &graph,
                          const olc::vi2d &start,
                          std::vector<std::pair<olc::vi2d, olc::vi2d>> &spanningTree);
-    void decorateWalls(std::vector<u16> &tilesBackground,
+    void buildWalls(std::vector<u16> &tilesBackground,
                        std::vector<u16> &tilesForeground);
 
 public:
@@ -76,7 +76,8 @@ public:
                   i32 width,
                   i32 height,
                   std::vector<u16> &tilesBackground,
-                  std::vector<u16> &tilesForeground);
+                  std::vector<u16> &tilesForeground,
+                  olc::vf2d &spawnPos);
 };
 
 #endif

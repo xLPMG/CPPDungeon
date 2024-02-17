@@ -10,6 +10,9 @@
 #include <cstddef>
 #include <sys/types.h>
 
+#define OLC_IGNORE_VEC2D
+#include "olcUTIL_Geometry2D.h"
+
 namespace cppdungeon
 {
     typedef float f32;
@@ -71,6 +74,16 @@ namespace cppdungeon
         LEFT,
         RIGHT
     };
+
+    static inline i32 idx(i32 x, i32 y, i32 width)
+    {
+        return y * width + x;
+    }
+
+    static inline i32 idx(olc::vi2d pos, i32 width)
+    {
+        return pos.y * width + pos.x;
+    }
 
 }
 

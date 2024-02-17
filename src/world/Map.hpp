@@ -27,6 +27,7 @@ private:
     std::vector<u16> tilesBackground;
     cppdungeon::world::tiles::TileRegistry *tileRegistry;
     cppdungeon::world::Generator *generator;
+    olc::vf2d spawnPoint = {0, 0};
 
 public:
     olc::vf2d tileSize = {16, 16};
@@ -39,6 +40,7 @@ public:
     void renderForeground(olc::PixelGameEngine *pge, olc::vf2d offset, olc::vf2d screenSize);
     bool collides(olc::vf2d coordinate, u32 &tileId);
     void regenerate(i32 seed);
+    olc::vf2d getSpawnPoint();
 };
 
 #endif
