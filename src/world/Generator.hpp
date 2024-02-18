@@ -55,7 +55,7 @@ private:
             return (unsigned int)((ix * 73856093) ^ (iy * 19349663)) % HASH_SIZE;
         }
     };
-    i32 loopProbability = 0;
+    i32 loopProbability = 5;
 
     void generateRooms();
     void carve(olc::vi2d pos,
@@ -68,6 +68,8 @@ private:
     void dfsSpanningTree(std::map<olc::vi2d, std::vector<olc::vi2d>> &graph,
                          const olc::vi2d &start,
                          std::vector<std::pair<olc::vi2d, olc::vi2d>> &spanningTree);
+    void fillGaps();
+
     void buildWalls();
 
     void decorateFloor();

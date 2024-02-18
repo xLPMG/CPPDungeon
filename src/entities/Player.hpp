@@ -36,7 +36,7 @@ private:
 public:
     Player(olc::vf2d position);
     ~Player();
-    void update(float fElapsedTime);
+    void update(float &deltaTime);
     void render(olc::PixelGameEngine *pge, olc::vf2d offset);
     void move(i8 &x, i8 &y, bool sprinting, f32 &deltaTime, cppdungeon::world::Map* map);
 };

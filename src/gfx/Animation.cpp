@@ -1,4 +1,5 @@
 #include "Animation.hpp"
+#include <iostream>
 
 cppdungeon::gfx::Animation::Animation(std::string file, i8 frameWidth, i8 frameHeight, f32 frameTime, bool repeating) : frameWidth(frameWidth), frameHeight(frameHeight), frameTime(frameTime), repeating(repeating)
 {

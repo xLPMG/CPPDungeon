@@ -54,43 +54,13 @@ void cppdungeon::world::Generator::generate(u32 seed, u16 width, u16 height, std
     ////////////////////
     //   FILL HOLES   //
     ////////////////////
-    for (i32 x = bounds.pos.x; x < bounds.pos.x + bounds.size.x; x++)
-    {
-        for (i32 y = bounds.pos.y; y < bounds.pos.y + bounds.size.y; y++)
-        {
-            i32 self = idx(x, y, width);
-            if (tilesBackground[self] == 0)
-            {
-                // one tile in each direction
-                if (tilesBackground[idx(x + 1, y, width)] > 0 && tilesBackground[idx(x - 1, y, width)] > 0)
-                {
-                    tilesBackground[self] = 1;
-                }
-                else if (tilesBackground[idx(x, y + 1, width)] > 0 && tilesBackground[idx(x, y - 1, width)] > 0)
-                {
-                    tilesBackground[self] = 1;
 
-                    // one and two tiles
-                }
-                else if (tilesBackground[idx(x, y + 2, width)] > 0 && tilesBackground[idx(x, y - 1, width)] > 0)
-                {
-                    tilesBackground[self] = 1;
-                }
-                else if (tilesBackground[idx(x, y + 1, width)] > 0 && tilesBackground[idx(x, y - 2, width)] > 0)
-                {
-                    tilesBackground[self] = 1;
-                }
-                else if (tilesBackground[idx(x + 2, y, width)] > 0 && tilesBackground[idx(x - 1, y, width)] > 0)
-                {
-                    tilesBackground[self] = 1;
-                }
-                else if (tilesBackground[idx(x + 1, y, width)] > 0 && tilesBackground[idx(x - 2, y, width)] > 0)
-                {
-                    tilesBackground[self] = 1;
-                }
-            }
-        }
-    }
+    /**
+     * The map will contain weird gaps, such as 1 or 2 tile wide spaces between corridors.
+     * The issue with that is, that wall textures will be rendered over each other, and the map will look weird.
+     * To fix this, we will fill the gaps with floor tiles and just expand the walkable area.
+     * */
+    fillGaps();
 
     ////////////////////
     // MAP DECORATION //
@@ -309,6 +279,69 @@ void cppdungeon::world::Generator::dfsSpanningTree(std::map<olc::vi2d, std::vect
     }
 }
 
+void cppdungeon::world::Generator::fillGaps()
+{
+    for (i32 x = bounds.pos.x; x < bounds.pos.x + bounds.size.x; x++)
+    {
+        for (i32 y = bounds.pos.y; y < bounds.pos.y + bounds.size.y; y++)
+        {
+            i32 self = idx(x, y, width);
+            if (tilesBackgroundPtr->at(self) == 0)
+            {
+                // one tile in each direction
+                if (tilesBackgroundPtr->at(idx(x + 1, y, width)) > 0 && tilesBackgroundPtr->at(idx(x - 1, y, width)) > 0)
+                {
+                    tilesBackgroundPtr->at(self) = 1;
+                }
+                else if (tilesBackgroundPtr->at(idx(x, y + 1, width)) > 0 && tilesBackgroundPtr->at(idx(x, y - 1, width)) > 0)
+                {
+                    tilesBackgroundPtr->at(self) = 1;
+                }
+
+                // one and two tiles
+                else if (tilesBackgroundPtr->at(idx(x, y + 2, width)) > 0 && tilesBackgroundPtr->at(idx(x, y - 1, width)) > 0)
+                {
+                    tilesBackgroundPtr->at(self) = 1;
+                }
+                else if (tilesBackgroundPtr->at(idx(x, y + 1, width)) > 0 && tilesBackgroundPtr->at(idx(x, y - 2, width)) > 0)
+                {
+                    tilesBackgroundPtr->at(self) = 1;
+                }
+                else if (tilesBackgroundPtr->at(idx(x + 2, y, width)) > 0 && tilesBackgroundPtr->at(idx(x - 1, y, width)) > 0)
+                {
+                    tilesBackgroundPtr->at(self) = 1;
+                }
+                else if (tilesBackgroundPtr->at(idx(x + 1, y, width)) > 0 && tilesBackgroundPtr->at(idx(x - 2, y, width)) > 0)
+                {
+                    tilesBackgroundPtr->at(self) = 1;
+                }
+            }
+        }
+    }
+
+    // sometimes the filling process leave 1x1 holes. This should fix it.
+    std::vector<usize> oldBackground = *tilesBackgroundPtr;
+    for (i32 x = bounds.pos.x; x < bounds.pos.x + bounds.size.x; x++)
+    {
+        for (i32 y = bounds.pos.y; y < bounds.pos.y + bounds.size.y; y++)
+        {
+            i32 self = idx(x, y, width);
+            if (oldBackground.at(self) == 0)
+            {
+                // one tile in each direction
+                if (oldBackground.at(idx(x + 1, y, width)) > 0 && oldBackground.at(idx(x - 1, y, width)) > 0)
+                {
+                    tilesBackgroundPtr->at(self) = 1;
+                }
+                else if (oldBackground.at(idx(x, y + 1, width)) > 0 && oldBackground.at(idx(x, y - 1, width)) > 0)
+                {
+                    tilesBackgroundPtr->at(self) = 1;
+                }
+            }
+        }
+    }
+}
+
 void cppdungeon::world::Generator::buildWalls()
 {
 
@@ -347,31 +380,47 @@ void cppdungeon::world::Generator::buildWalls()
             // left center wall
             else if (oldBackground[neighborW] == 0 && oldBackground[neighborNW] == 0 && oldBackground[neighborSW] == 0 && oldBackground[neighborN] > 0 && oldBackground[neighborS] > 0)
             {
-                tilesBackgroundPtr->at(neighborW) = 10;
+                tilesBackgroundPtr->at(neighborW) = rand() % 2 == 0 ? 10 : 11;
             }
             // right center wall
             else if (oldBackground[neighborE] == 0 && oldBackground[neighborNE] == 0 && oldBackground[neighborSE] == 0 && oldBackground[neighborN] > 0 && oldBackground[neighborS] > 0)
             {
-                tilesBackgroundPtr->at(neighborE) = 3;
+                tilesBackgroundPtr->at(neighborE) = rand() % 2 == 0 ? 3 : 4;
             }
             // top left outer corner
             else if (oldBackground[neighborN] == 0 && oldBackground[neighborW] == 0 && oldBackground[neighborNW] == 0)
             {
-                tilesBackgroundPtr->at(neighborN) = 2;
-                tilesBackgroundPtr->at(idx(pos + N + N, width)) = 5;
+                if (oldBackground[neighborNE] == 0)
+                {
+                    tilesBackgroundPtr->at(neighborN) = 2;
+                    tilesBackgroundPtr->at(idx(pos + N + N, width)) = 5;
+                }
+                else
+                {
+                    tilesBackgroundPtr->at(neighborN) = 21;
+                    tilesBackgroundPtr->at(idx(pos + N + N, width)) = 15;
+                }
 
-                tilesBackgroundPtr->at(neighborW) = 10;
-                tilesBackgroundPtr->at(neighborNW) = 10;
+                tilesBackgroundPtr->at(neighborW) = rand() % 2 == 0 ? 10 : 11;
+                tilesBackgroundPtr->at(neighborNW) = rand() % 2 == 0 ? 10 : 11;
                 tilesBackgroundPtr->at(idx(pos + N + N + W, width)) = 7;
             }
             // top right outer corner
             else if (oldBackground[neighborN] == 0 && oldBackground[neighborE] == 0 && oldBackground[neighborNE] == 0)
             {
-                tilesBackgroundPtr->at(neighborN) = 2;
-                tilesBackgroundPtr->at(idx(pos + N + N, width)) = 5;
+                if (oldBackground[neighborNW] == 0)
+                {
+                    tilesBackgroundPtr->at(neighborN) = 2;
+                    tilesBackgroundPtr->at(idx(pos + N + N, width)) = 5;
+                }
+                else
+                {
+                    tilesBackgroundPtr->at(neighborN) = 20;
+                    tilesBackgroundPtr->at(idx(pos + N + N, width)) = 16;
+                }
 
-                tilesBackgroundPtr->at(neighborE) = 3;
-                tilesBackgroundPtr->at(neighborNE) = 3;
+                tilesBackgroundPtr->at(neighborE) = rand() % 2 == 0 ? 3 : 4;
+                tilesBackgroundPtr->at(neighborNE) = rand() % 2 == 0 ? 3 : 4;
                 tilesBackgroundPtr->at(idx(pos + N + N + E, width)) = 6;
             }
             // bottom left outer corner
@@ -380,17 +429,47 @@ void cppdungeon::world::Generator::buildWalls()
                 tilesBackgroundPtr->at(neighborS) = 18;
                 tilesForegroundPtr->at(self) = 19;
 
-                tilesBackgroundPtr->at(neighborSW) = 9;
-                tilesBackgroundPtr->at(neighborW) = 10;
+                if (oldBackground[neighborNW] == 0)
+                {
+                    tilesBackgroundPtr->at(neighborSW) = 9;
+                    tilesBackgroundPtr->at(neighborW) = 10;
+                }
+                else
+                {
+                    tilesBackgroundPtr->at(neighborSW) = 9;
+                    tilesBackgroundPtr->at(neighborW) = 12;
+                }
             }
             // bottom right outer corner
             else if (oldBackground[neighborS] == 0 && oldBackground[neighborE] == 0 && oldBackground[neighborSE] == 0)
             {
-                tilesBackgroundPtr->at(neighborS) = 18;
-                tilesForegroundPtr->at(self) = 19;
+                // TODO: do this for all other outer corners
+                if (oldBackground[neighborSW] == 0 && oldBackground[neighborNE] == 0)
+                {
+                    tilesBackgroundPtr->at(neighborS) = 18;
+                    tilesForegroundPtr->at(self) = 19;
+                    tilesBackgroundPtr->at(neighborE) = 3;
+                }
+                else if (oldBackground[neighborSW] > 0 && oldBackground[neighborNE] == 0)
+                {
+                    tilesBackgroundPtr->at(neighborS) = 17;
+                    tilesForegroundPtr->at(self) = 14;
+                    tilesBackgroundPtr->at(neighborE) = 3;
+                }
+                else if (oldBackground[neighborSW] == 0 && oldBackground[neighborNE] > 0)
+                {
+                    tilesBackgroundPtr->at(neighborS) = 18;
+                    tilesForegroundPtr->at(self) = 14;
+                    tilesBackgroundPtr->at(neighborE) = 17;
+                }
+                else
+                {
+                    tilesForegroundPtr->at(self) = 14;
+                    tilesBackgroundPtr->at(neighborE) = 17;
+                    tilesBackgroundPtr->at(neighborS) = 17;
+                }
 
                 tilesBackgroundPtr->at(neighborSE) = 8;
-                tilesBackgroundPtr->at(neighborE) = 3;
             }
             // top left inner corner
             else if (oldBackground[neighborN] > 0 && oldBackground[neighborW] > 0 && oldBackground[neighborNW] == 0)

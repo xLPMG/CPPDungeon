@@ -23,6 +23,9 @@ bool cppdungeon::Game::OnUserCreate()
 bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
 {
     // INPUT
+    if(GetKey(olc::Key::ESCAPE).bHeld){
+        return false;
+    }
     bool moveRight = GetKey(olc::Key::RIGHT).bHeld || GetKey(olc::Key::D).bHeld;
     bool moveLeft = GetKey(olc::Key::LEFT).bHeld || GetKey(olc::Key::A).bHeld;
     bool moveUp = GetKey(olc::Key::UP).bHeld || GetKey(olc::Key::W).bHeld;
@@ -32,14 +35,14 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     i8 y = moveDown - moveUp;
     player->move(x, y, sprinting, fElapsedTime, map.get());
 
-    if(GetKey(olc::Key::SPACE).bHeld){
+    if(GetKey(olc::Key::SPACE).bPressed){
         map->regenerate(seed);
-        //player->setPosition(map->getSpawnPoint());
+        player->setPosition(map->getSpawnPoint());
         seed++;
     }
 
     // UPDATE
-
+    player->update(fElapsedTime);
 
     // RENDER
     camera->setOffset(player->getPosition() - GetScreenSize() / 2 + player->getSize() / 2);

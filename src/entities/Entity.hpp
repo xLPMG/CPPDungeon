@@ -23,7 +23,7 @@ namespace cppdungeon
 
         public:
             Entity(olc::vf2d position, olc::vf2d size) : position(position), size(size) {};
-            virtual void update(f32 fElapsedTime) = 0;
+            virtual void update(f32 &deltaTime) = 0;
             virtual void render(olc::PixelGameEngine *pge, olc::vf2d offset) = 0;
             virtual void move(i8 &x, i8 &y, bool sprinting, f32 &deltaTime, cppdungeon::world::Map* map) = 0;
 

@@ -1,4 +1,5 @@
 #include "Player.hpp"
+#include <iostream>
 
 cppdungeon::entities::Player::Player(olc::vf2d position) : Entity(position, {16, 16})
 {
@@ -14,26 +15,26 @@ cppdungeon::entities::Player::~Player()
 {
 }
 
-void cppdungeon::entities::Player::update(float fElapsedTime)
+void cppdungeon::entities::Player::update(float &deltaTime)
 {
     hitbox = {position.x + bounds.x, position.y + bounds.y, bounds.width, bounds.height};
 
     switch (direction)
     {
     case Direction::RIGHT:
-        rightAnimation->update(fElapsedTime);
+        rightAnimation->update(deltaTime);
         break;
     case Direction::LEFT:
-        leftAnimation->update(fElapsedTime);
+        leftAnimation->update(deltaTime);
         break;
     case Direction::DOWN:
-        frontAnimation->update(fElapsedTime);
+        frontAnimation->update(deltaTime);
         break;
     case Direction::UP:
-        backAnimation->update(fElapsedTime);
+        backAnimation->update(deltaTime);
         break;
     default:
-        idleAnimation->update(fElapsedTime);
+        idleAnimation->update(deltaTime);
         break;
     }
 }
