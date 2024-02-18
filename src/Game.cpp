@@ -72,7 +72,7 @@ int main()
     width = 1920;
     height = 1080;
 #endif
-    cppdungeon::i8 scale = 1;
+    cppdungeon::i8 scale = 4;
     cppdungeon::Game demo;
     if (demo.Construct(width / scale, height / scale, scale, scale))
         demo.Start();
