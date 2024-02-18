@@ -25,17 +25,18 @@ protected:
     std::unique_ptr<olc::Sprite> texture;
     olc::vf2d size;
     bool isSolid = false;
-public:
-    static constexpr f32 WIDTH = 16;
-    static constexpr f32 HEIGHT = 16;
 
+public:
     Tile(std::string texture);
-    ~Tile();
-    virtual void render(olc::PixelGameEngine* pge, olc::vf2d position) = 0;
-    bool getSolid(){
+    
+    virtual ~Tile();
+    virtual void render(olc::PixelGameEngine *pge, olc::vf2d position) = 0;
+    bool getSolid()
+    {
         return this->isSolid;
     };
-    void setSolid(bool isSolid){
+    void setSolid(bool isSolid)
+    {
         this->isSolid = isSolid;
     }
 };

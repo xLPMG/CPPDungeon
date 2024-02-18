@@ -3,6 +3,8 @@
 
 #include "../../constants.hpp"
 #include "Tile.hpp"
+#include <vector>
+#include <memory>
 
 namespace cppdungeon
 {
@@ -18,7 +20,7 @@ namespace cppdungeon
 class cppdungeon::world::tiles::TileRegistry
 {
 public:
-    std::vector<cppdungeon::world::tiles::Tile*> tiles;
+    std::vector<std::unique_ptr<cppdungeon::world::tiles::Tile>> tiles;
     TileRegistry();
     ~TileRegistry();
 };

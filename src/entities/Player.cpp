@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-cppdungeon::entities::Player::Player(olc::vf2d position): Entity(position, {16, 16})
+cppdungeon::entities::Player::Player(olc::vf2d position) : Entity(position, {16, 16})
 {
     idleAnimation = std::make_unique<gfx::Animation>("./res/textures/hero/hero_sit_sheet.png", 16, 16, 0.4, false);
     frontAnimation = std::make_unique<gfx::Animation>("./res/textures/hero/hero_front_sheet.png", 16, 16, 0.15);
@@ -11,7 +11,8 @@ cppdungeon::entities::Player::Player(olc::vf2d position): Entity(position, {16, 
 }
 
 cppdungeon::entities::Player::~Player()
-{}
+{
+}
 
 void cppdungeon::entities::Player::update(float fElapsedTime)
 {
@@ -37,9 +38,9 @@ void cppdungeon::entities::Player::update(float fElapsedTime)
     }
 }
 
-void cppdungeon::entities::Player::render(olc::PixelGameEngine* pge, olc::vf2d offset)
+void cppdungeon::entities::Player::render(olc::PixelGameEngine *pge, olc::vf2d offset)
 {
-switch (direction)
+    switch (direction)
     {
     case Direction::RIGHT:
         rightAnimation->render(pge, position - offset);
@@ -59,11 +60,11 @@ switch (direction)
     }
 }
 
-void cppdungeon::entities::Player::move(i8 *x, i8 *y, bool sprinting, f32 *deltaTime, cppdungeon::world::Map* map)
+void cppdungeon::entities::Player::move(i8 &x, i8 &y, bool sprinting, f32 &deltaTime, cppdungeon::world::Map *map)
 {
-    f32 actualSpeedX = *x * speed * (sprinting ? sprintBoost : 1);
-    f32 actualSpeedY = *y * speed * (sprinting ? sprintBoost : 1);
-    if (*x != 0 && *y != 0)
+    f32 actualSpeedX = x * speed * (sprinting ? sprintBoost : 1);
+    f32 actualSpeedY = y * speed * (sprinting ? sprintBoost : 1);
+    if (x != 0 && y != 0)
     {
         actualSpeedX *= 0.707;
         actualSpeedY *= 0.707;
@@ -91,22 +92,28 @@ void cppdungeon::entities::Player::move(i8 *x, i8 *y, bool sprinting, f32 *delta
         return;
     }
 
-    position += olc::vf2d(actualSpeedX, actualSpeedY) *  *deltaTime;
+    position += olc::vf2d(actualSpeedX, actualSpeedY) * deltaTime;
 
-    u32 tileId;
+    usize tileId;
     // top middle
-    if(map->collides({position.x + bounds.x + bounds.width/2, position.y + bounds.y}, tileId)){
-        position.y = (u32)(tileId / map->width + 1) * map->tileSize.y - bounds.y;
-    // bottom middle
-    }else if(map->collides({position.x + bounds.x + bounds.width/2, position.y + bounds.y + bounds.height}, tileId)){
-       position.y = (u32)(tileId / map->width) * map->tileSize.y - bounds.y - bounds.height;
+    if (map->collides({position.x + bounds.x + bounds.width / 2, position.y + bounds.y}, tileId))
+    {
+        position.y = (u32)(tileId / map->getWidth() + 1) * TILE_SIZE.y - bounds.y;
+        // bottom middle
+    }
+    else if (map->collides({position.x + bounds.x + bounds.width / 2, position.y + bounds.y + bounds.height}, tileId))
+    {
+        position.y = (u32)(tileId / map->getWidth()) * TILE_SIZE.y - bounds.y - bounds.height;
     }
 
     // left middle
-    if(map->collides({position.x + bounds.x, position.y + bounds.y + bounds.height/2}, tileId)){
-        position.x = (u32)(tileId % map->width + 1) * map->tileSize.x - bounds.x;
-    // right middle
-    }else if(map->collides({position.x + bounds.x + bounds.width, position.y + bounds.y + bounds.height/2}, tileId)){
-        position.x = (u32)(tileId % map->width) * map->tileSize.x - bounds.x - bounds.width;
+    if (map->collides({position.x + bounds.x, position.y + bounds.y + bounds.height / 2}, tileId))
+    {
+        position.x = (u32)(tileId % map->getWidth() + 1) * TILE_SIZE.x - bounds.x;
+        // right middle
+    }
+    else if (map->collides({position.x + bounds.x + bounds.width, position.y + bounds.y + bounds.height / 2}, tileId))
+    {
+        position.x = (u32)(tileId % map->getWidth()) * TILE_SIZE.x - bounds.x - bounds.width;
     }
 }

@@ -2,6 +2,8 @@
 #include "entities/Player.hpp"
 #include "world/Map.hpp"
 
+#include <memory>
+
 #ifdef WIN32
 #include <windows.h>
 #elif __APPLE__
@@ -10,11 +12,10 @@
 
 bool cppdungeon::Game::OnUserCreate()
 {
-    tileRegistry = new cppdungeon::world::tiles::TileRegistry();
-    map = new world::Map(1000, 99, 99, olc::vf2d{16, 16}, tileRegistry);
-    camera = new cppdungeon::gfx::Camera({0, 0});
-    player = new cppdungeon::entities::Player({48, 32});
-    entities.push_back(player);
+    tileRegistry = std::make_unique<cppdungeon::world::tiles::TileRegistry>();
+    map = std::make_unique<cppdungeon::world::Map>(1000, 99, 99, tileRegistry.get());
+    camera = std::make_unique<cppdungeon::gfx::Camera>(olc::vf2d{0,0});
+    player = std::make_unique<cppdungeon::entities::Player>(olc::vf2d{0, 0});
     player->setPosition(map->getSpawnPoint());
     return true;
 }
@@ -29,7 +30,7 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     bool sprinting = GetKey(olc::Key::SHIFT).bHeld;
     i8 x = moveRight - moveLeft;
     i8 y = moveDown - moveUp;
-    player->move(&x, &y, sprinting, &fElapsedTime, map);
+    player->move(x, y, sprinting, fElapsedTime, map.get());
 
     if(GetKey(olc::Key::SPACE).bHeld){
         map->regenerate(seed);
@@ -38,20 +39,14 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     }
 
     // UPDATE
-    for (auto &entity : entities)
-    {
-        entity->update(fElapsedTime);
-    }
+
 
     // RENDER
     camera->setOffset(player->getPosition() - GetScreenSize() / 2 + player->getSize() / 2);
     Clear(olc::Pixel(28, 17, 23));
 
     map->renderBackground(this, camera->getOffset(), GetScreenSize());
-    for (auto &entity : entities)
-    {
-        entity->render(this, camera->getOffset());
-    }
+    player->render(this, camera->getOffset());
     map->renderForeground(this, camera->getOffset(), GetScreenSize());
 
     return true;
@@ -59,13 +54,6 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
 
 bool cppdungeon::Game::OnUserDestroy()
 {
-    delete tileRegistry;
-    delete map;
-    delete camera;
-    for (auto &entity : entities)
-    {
-        delete entity;
-    }
     return true;
 }
 

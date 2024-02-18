@@ -85,6 +85,8 @@ namespace cppdungeon
         return pos.y * width + pos.x;
     }
 
+    static constexpr olc::vi2d TILE_SIZE = { 16,16 };
+
 }
 
 #endif

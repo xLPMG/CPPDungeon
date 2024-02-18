@@ -19,8 +19,10 @@ class cppdungeon::world::tiles::PlaceholderTile : public Tile
 public:
     PlaceholderTile(): Tile(""){
         this->setSolid(true);
-    };
-    ~PlaceholderTile();
+    }
+    ~PlaceholderTile(){
+        // nothing to delete
+    }
     void render(olc::PixelGameEngine *pge, olc::vf2d position) override {
         // dont draw anything
     }

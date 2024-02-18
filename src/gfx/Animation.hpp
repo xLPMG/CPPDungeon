@@ -19,13 +19,15 @@ class cppdungeon::gfx::Animation
 {
 private:
     std::unique_ptr<olc::Sprite> sprite;
-    i8 frames;
     i8 frameWidth;
     i8 frameHeight;
-    i8 currentFrame;
-    f32 currentTime;
     f32 frameTime;
     bool repeating;
+    i8 frames;
+
+    i8 currentFrame;
+    f32 currentTime;
+
     u8 flipped = 0;
     std::chrono::time_point<std::chrono::high_resolution_clock> lastUpdate;
 

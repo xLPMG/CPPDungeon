@@ -20,7 +20,11 @@ public:
     WallTile(std::string texture) : Tile(texture)
     {
         this->setSolid(true);
-    };
+    }
+    ~WallTile()
+    {
+        // nothing to delete
+    }
     void render(olc::PixelGameEngine *pge, olc::vf2d position) override
     {
         pge->DrawSprite(position, texture.get());

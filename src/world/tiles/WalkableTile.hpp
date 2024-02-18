@@ -20,7 +20,11 @@ public:
     WalkableTile(std::string texture) : Tile(texture)
     {
         this->setSolid(false);
-    };
+    }
+    ~WalkableTile()
+    {
+        // nothing to delete
+    }
     void render(olc::PixelGameEngine *pge, olc::vf2d position) override
     {
         pge->DrawSprite(position, texture.get());

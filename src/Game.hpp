@@ -27,22 +27,20 @@ public:
     {
         sAppName = "dungeon";
     }
-private:    
-    gfx::Camera* camera;
-    olc::vi2d vBlockSize = { 16,16 };
-    std::vector<entities::Entity *> entities;
-    cppdungeon::world::tiles::TileRegistry* tileRegistry;
-    world::Map* map;
-    i32 seed = 1;
+private:  
+    std::unique_ptr<cppdungeon::world::tiles::TileRegistry> tileRegistry;
+    std::unique_ptr<cppdungeon::world::Map> map;
+    std::unique_ptr<cppdungeon::gfx::Camera> camera;
+    std::unique_ptr<cppdungeon::entities::Entity> player;
 
-    entities::Entity *player;
+    i32 seed = 1;
     
     bool OnUserCreate() override;
     bool OnUserUpdate(float fElapsedTime) override;
     bool OnUserDestroy() override;
 
     gfx::Camera *getCamera(){
-        return this->camera;
+        return this->camera.get();
     }
 };
 

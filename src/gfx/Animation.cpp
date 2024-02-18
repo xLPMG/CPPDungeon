@@ -1,12 +1,8 @@
 #include "Animation.hpp"
 
-cppdungeon::gfx::Animation::Animation(std::string file, i8 frameWidth, i8 frameHeight, f32 frameTime, bool repeating)
+cppdungeon::gfx::Animation::Animation(std::string file, i8 frameWidth, i8 frameHeight, f32 frameTime, bool repeating) : frameWidth(frameWidth), frameHeight(frameHeight), frameTime(frameTime), repeating(repeating)
 {
     this->sprite = std::make_unique<olc::Sprite>(file);
-    this->frameWidth = frameWidth;
-    this->frameHeight = frameHeight;
-    this->frameTime = frameTime;
-    this->repeating = repeating;
     frames = sprite->width / frameWidth;
     lastUpdate = std::chrono::high_resolution_clock::now();
 }
