@@ -69,6 +69,9 @@ private:
                          const olc::vi2d &start,
                          std::vector<std::pair<olc::vi2d, olc::vi2d>> &spanningTree);
     void buildWalls(std::vector<u16> &tilesBackground,
+                    std::vector<u16> &tilesForeground);
+
+    void decorateFloor(std::vector<u16> &tilesBackground,
                        std::vector<u16> &tilesForeground);
 
 public:

@@ -33,7 +33,7 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
 
     if(GetKey(olc::Key::SPACE).bHeld){
         map->regenerate(seed);
-        player->setPosition(map->getSpawnPoint());
+        //player->setPosition(map->getSpawnPoint());
         seed++;
     }
 
@@ -81,8 +81,9 @@ int main()
     width = 1920;
     height = 1080;
 #endif
+    cppdungeon::i8 scale = 1;
     cppdungeon::Game demo;
-    if (demo.Construct(width / 1, height / 1, 1, 1))
+    if (demo.Construct(width / scale, height / scale, scale, scale))
         demo.Start();
 
     return 0;

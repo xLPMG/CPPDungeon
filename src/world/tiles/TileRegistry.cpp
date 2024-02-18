@@ -5,9 +5,9 @@
 
 cppdungeon::world::tiles::TileRegistry::TileRegistry()
 {
-    tiles.resize(22);
+    tiles.resize(34);
     tiles[0] = new PlaceholderTile();
-    tiles[1] = new WalkableTile("./res/textures/map/floor_plain.png");
+    tiles[1] = new WalkableTile("./res/textures/map/floor/floor_plain.png");
 
     // wall tiles
     tiles[2] = new WallTile("./res/textures/map/wall/Wall_front.png");
@@ -30,6 +30,20 @@ cppdungeon::world::tiles::TileRegistry::TileRegistry()
     tiles[19] = new WallTile("./res/textures/map/wall/Wall_inner_n.png");
     tiles[20] = new WallTile("./res/textures/map/wall/Wall_front_left.png");
     tiles[21] = new WallTile("./res/textures/map/wall/Wall_front_right.png");
+
+    tiles[22] = new WalkableTile("./res/textures/map/floor/floor_mud_mid_1.png");
+    tiles[23] = new WalkableTile("./res/textures/map/floor/floor_mud_mid_2.png");
+    tiles[24] = new WalkableTile("./res/textures/map/floor/floor_mud_n_1.png");
+    tiles[25] = new WalkableTile("./res/textures/map/floor/floor_mud_n_2.png");
+    tiles[26] = new WalkableTile("./res/textures/map/floor/floor_mud_ne.png");
+    tiles[27] = new WalkableTile("./res/textures/map/floor/floor_mud_nw.png");
+    tiles[28] = new WalkableTile("./res/textures/map/floor/floor_mud_s_1.png");
+    tiles[29] = new WalkableTile("./res/textures/map/floor/floor_mud_s_2.png");
+    tiles[30] = new WalkableTile("./res/textures/map/floor/floor_mud_se.png");
+    tiles[31] = new WalkableTile("./res/textures/map/floor/floor_mud_sw.png");
+    tiles[32] = new WalkableTile("./res/textures/map/floor/floor_mud_w.png");
+    tiles[33] = new WalkableTile("./res/textures/map/floor/floor_mud_e.png");
+
 }
 
 cppdungeon::world::tiles::TileRegistry::~TileRegistry()

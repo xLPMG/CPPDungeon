@@ -83,6 +83,8 @@ void cppdungeon::world::Generator::generate(i32 seed, i32 width, i32 height, std
     }
 
     buildWalls(tilesBackground, tilesForeground);
+
+    decorateFloor(tilesBackground, tilesForeground);
 }
 
 void cppdungeon::world::Generator::generateRooms(std::vector<u16> &tiles)
@@ -311,9 +313,9 @@ void cppdungeon::world::Generator::buildWalls(std::vector<u16> &tilesBackground,
 
     std::vector<u16> oldBackground = tilesBackground;
 
-    for (i32 x = bounds.pos.x; x < bounds.pos.x + bounds.size.x; x++)
+    for (i32 y = bounds.pos.y; y < bounds.pos.y + bounds.size.y; y++)
     {
-        for (i32 y = bounds.pos.y; y < bounds.pos.y + bounds.size.y; y++)
+        for (i32 x = bounds.pos.x; x < bounds.pos.x + bounds.size.x; x++)
         {
             olc::vi2d pos = {x, y};
             i32 self = idx(pos, width);
@@ -390,7 +392,6 @@ void cppdungeon::world::Generator::buildWalls(std::vector<u16> &tilesBackground,
 
                 tilesBackground[neighborSE] = 8;
                 tilesBackground[neighborE] = 3;
-
             }
             // top left inner corner
             else if (oldBackground[neighborN] > 0 && oldBackground[neighborW] > 0 && oldBackground[neighborNW] == 0)
@@ -415,6 +416,78 @@ void cppdungeon::world::Generator::buildWalls(std::vector<u16> &tilesBackground,
             {
                 tilesForeground[neighborE] = 14;
                 tilesBackground[neighborSE] = 17;
+            }
+        }
+    }
+}
+
+void cppdungeon::world::Generator::decorateFloor(std::vector<u16> &tilesBackground,
+                                                 std::vector<u16> &tilesForeground)
+{
+    f32 chanceMudPatch = 5;
+    f32 chanceStain = 30;
+
+    for (i32 y = bounds.pos.y; y < bounds.pos.y + bounds.size.y; y++)
+    {
+        for (i32 x = bounds.pos.x; x < bounds.pos.x + bounds.size.x; x++)
+        {
+            if (tilesBackground[idx(x, y, width)] != 1)
+                continue;
+
+            if (rand() % 100 < chanceMudPatch)
+            {
+                bool canSpawn = true;
+                i32 w = rand() % 4 + 7;
+                i32 h = rand() % 4 + 7;
+
+                for (i32 j = y; j < y + h; j++)
+                {
+                    for (i32 i = x; i < x + w; i++)
+                    {
+                        if (!canSpawn)
+                            break;
+
+                        if (tilesBackground[idx(i, j, width)] != 1)
+                        {
+                            canSpawn = false;
+                        }
+                    }
+                }
+
+                if (canSpawn)
+                {
+                    olc::vi2d pos = {x + 2, y + 2};
+                    w -= 4;
+                    h -= 4;
+
+                    // CORNERS
+                    tilesBackground[idx(pos.x + w, pos.y, width)] = 26;     // NE
+                    tilesBackground[idx(pos.x, pos.y, width)] = 27;         // NW
+                    tilesBackground[idx(pos.x + w, pos.y + h, width)] = 30; // SE
+                    tilesBackground[idx(pos.x, pos.y + h, width)] = 31;     // SW
+
+                    // VERTICAL EDGES
+                    for (i32 j = pos.y + 1; j < pos.y + h; j++)
+                    {
+                        tilesBackground[idx(pos.x, j, width)] = 32;
+                        tilesBackground[idx(pos.x + w, j, width)] = 33;
+                    }
+                    // HORIZONTAL EDGES
+                    for (i32 i = pos.x + 1; i < pos.x + w; i++)
+                    {
+                        tilesBackground[idx(i, pos.y, width)] = rand() % 2 == 0 ? 24 : 25;
+                        tilesBackground[idx(i, pos.y + h, width)] = rand() % 2 == 0 ? 28 : 29;
+                    }
+
+                    // MIDDLE
+                    for (i32 j = pos.y + 1; j < pos.y + h; j++)
+                    {
+                        for (i32 i = pos.x + 1; i < pos.x + w; i++)
+                        {
+                            tilesBackground[idx(i, j, width)] = rand() % 2 == 0 ? 22 : 23;
+                        }
+                    }
+                }
             }
         }
     }

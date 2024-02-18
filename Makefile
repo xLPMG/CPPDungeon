@@ -18,7 +18,6 @@ CXXFLAGS += -Wfloat-equal
 CXXFLAGS += -Wstrict-aliasing
 CXXFLAGS += -Wswitch-default
 CXXFLAGS += -Wformat=2
-CXXFLAGS += -Wno-newline-eof
 CXXFLAGS += -Wno-unused-parameter
 CXXFLAGS += -Wno-strict-prototypes
 CXXFLAGS += -Wno-fixed-enum-extension
@@ -43,6 +42,7 @@ else ifeq ($(UNAME),Linux)
 else ifeq ($(OS),Windows_NT)
 	find_files = $(foreach n,$1,$(shell C:\\\msys64\\\usr\\\bin\\\find.exe -L $2 -name "$n"))
 	SRC = $(call find_files,*.cpp,src)
+	CXX += -mconsole
 endif
 OBJ = $(SRC:%.cpp=$(BIN)/%.o)
 DEP = $(SRC:%.cpp=$(BIN)/%.d)
@@ -68,7 +68,7 @@ dirs: $(BIN)
 	rsync -a --include '*/' --exclude '*' "src" "bin"
 
 $(OBJ): $(BIN)/%.o: %.cpp
-	$(CXX) -mconsole -o $@ -MMD -c $< $(CXXFLAGS) $(INCFLAGS)
+	$(CXX) -o $@ -MMD -c $< $(CXXFLAGS) $(INCFLAGS)
 
 dungeon: dirs $(OBJ)
 	$(LD) -o $(BIN)/dungeon $(filter %.o, $^) $(LDFLAGS)
