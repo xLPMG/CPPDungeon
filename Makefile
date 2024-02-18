@@ -35,14 +35,21 @@ LDFLAGS = -lm
 LDFLAGS += -lstdc++
 
 BIN = bin
-SRC = $(shell find src -name "*.cpp")
+UNAME := $(shell uname -s)
+ifeq ($(UNAME),Darwin)
+	SRC = $(shell find src -name "*.cpp")
+else ifeq ($(UNAME),Linux)
+	SRC = $(shell find src -name "*.cpp")
+else ifeq ($(OS),Windows_NT)
+	find_files = $(foreach n,$1,$(shell C:\\\msys64\\\usr\\\bin\\\find.exe -L $2 -name "$n"))
+	SRC = $(call find_files,*.cpp,src)
+endif
 OBJ = $(SRC:%.cpp=$(BIN)/%.o)
 DEP = $(SRC:%.cpp=$(BIN)/%.d)
 OUT = $(BIN)/game
 
 -include $(DEP)
 
-UNAME := $(shell uname -s)
 ifeq ($(UNAME),Darwin)
 	CXX = $(shell brew --prefix llvm)/bin/clang
 	LD = $(shell brew --prefix llvm)/bin/clang
@@ -50,8 +57,8 @@ ifeq ($(UNAME),Darwin)
 	LDFLAGS += -framework CoreGraphics -framework Foundation
 else ifeq ($(UNAME),Linux)
 	LDFLAGS += -lX11 -lGL -lpthread -lpng -lstdc++fs
-else ifeq ($(UNAME),Windows)
-	LDFLAGS += -user32 -gdi32 -opengl32 -gdiplus -Shlwapi -dwmapi -stdc++fs
+else ifeq ($(OS),Windows_NT)
+	LDFLAGS += -luser32 -lgdi32 -lopengl32 -lgdiplus -lShlwapi -ldwmapi -lstdc++fs -static -std=c++20
 endif
 
 $(BIN):
@@ -60,11 +67,13 @@ $(BIN):
 dirs: $(BIN)
 	rsync -a --include '*/' --exclude '*' "src" "bin"
 
-
 $(OBJ): $(BIN)/%.o: %.cpp
-	$(CXX) -o $@ -MMD -c $< $(CXXFLAGS) $(INCFLAGS)
+	$(CXX) -mconsole -o $@ -MMD -c $< $(CXXFLAGS) $(INCFLAGS)
 
 dungeon: dirs $(OBJ)
+	$(LD) -o $(BIN)/dungeon $(filter %.o, $^) $(LDFLAGS)
+	
+windows: $(OBJ)
 	$(LD) -o $(BIN)/dungeon $(filter %.o, $^) $(LDFLAGS)
 
 run:

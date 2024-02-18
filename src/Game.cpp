@@ -2,7 +2,7 @@
 #include "entities/Player.hpp"
 #include "world/Map.hpp"
 
-#if WIN32
+#ifdef WIN32
 #include <windows.h>
 #elif __APPLE__
 #include <CoreGraphics/CGDisplayConfiguration.h>
@@ -73,10 +73,7 @@ int main()
 {
     cppdungeon::u32 width = 0;
     cppdungeon::u32 height = 0;
-#if WIN32
-    width = (int)GetSystemMetrics(SM_CXSCREEN);
-    height = (int)GetSystemMetrics(SM_CYSCREEN);
-#elif __APPLE__
+#ifdef __APPLE__
     auto mainDisplayId = CGMainDisplayID();
     width = CGDisplayPixelsWide(mainDisplayId);
     height = CGDisplayPixelsHigh(mainDisplayId);
@@ -85,7 +82,7 @@ int main()
     height = 1080;
 #endif
     cppdungeon::Game demo;
-    if (demo.Construct(width / 4, height / 4, 4, 4))
+    if (demo.Construct(width / 1, height / 1, 1, 1))
         demo.Start();
 
     return 0;
