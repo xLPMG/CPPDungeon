@@ -28,12 +28,11 @@ private:
     std::vector<usize> tilesBackground;
     cppdungeon::world::tiles::TileRegistry *tileRegistry;
     std::unique_ptr<cppdungeon::world::Generator> generator;
-    olc::vf2d spawnPoint = {0, 0};
-    u16 width{};
-    u16 height{};
+    cppdungeon::world::Generator::MapInfo mapInfo;
+    olc::vu2d mapSize{};
 
 public:
-    Map(u32 seed, u16 width, u16 height, cppdungeon::world::tiles::TileRegistry *tileRegistry);
+    Map(u32 seed, u32 width, u32 height, cppdungeon::world::tiles::TileRegistry *tileRegistry);
     ~Map();
     void update(float fElapsedTime);
     void renderBackground(olc::PixelGameEngine *pge, olc::vf2d offset, olc::vf2d screenSize);
@@ -42,10 +41,10 @@ public:
     void regenerate(u32 seed);
     olc::vf2d getSpawnPoint();
     u16 getWidth(){
-        return width;
+        return mapSize.x;
     }
     u16 getHeight(){
-        return height;
+        return mapSize.y;
     }
 };
 

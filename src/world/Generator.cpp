@@ -8,7 +8,7 @@
 #include <unordered_set>
 #include <iostream>
 
-void cppdungeon::world::Generator::generate(u32 seed, u16 width, u16 height, std::vector<usize> &tilesBackground, std::vector<usize> &tilesForeground, olc::vf2d &spawnPos)
+void cppdungeon::world::Generator::generate(u32 seed, u16 width, u16 height, std::vector<usize> &tilesBackground, std::vector<usize> &tilesForeground, MapInfo &mapInfo)
 {
     srand(seed);
     this->width = width;
@@ -32,8 +32,14 @@ void cppdungeon::world::Generator::generate(u32 seed, u16 width, u16 height, std
     // ROOM GENERATION //
     /////////////////////
     generateRooms();
-    olc::utils::geom2d::rect<i32> spawnRoom = rooms[rand() % rooms.size()];
-    spawnPos = spawnRoom.middle();
+
+    std::sort(rooms.begin(), rooms.end(), [](const recti32 &lhs, const recti32 &rhs)
+              { return lhs.area() < rhs.area(); });
+
+    olc::utils::geom2d::rect<i32> spawnRoom = rooms.front();
+    mapInfo.spawnPoint = spawnRoom.middle();
+    olc::utils::geom2d::rect<i32> bossRoom = rooms.back();
+    mapInfo.bossPoint = bossRoom.middle();
 
     /////////////////////
     // PATH GENERATION //
@@ -67,6 +73,11 @@ void cppdungeon::world::Generator::generate(u32 seed, u16 width, u16 height, std
     ////////////////////
     buildWalls();
     decorateFloor();
+
+    // decorate spawn
+    tilesForeground.at(idx(mapInfo.spawnPoint.x, mapInfo.spawnPoint.y - 2, width)) = 38;
+    tilesBackground.at(idx(mapInfo.spawnPoint.x, mapInfo.spawnPoint.y - 1, width)) = 42;
+    tilesBackground.at(idx(mapInfo.spawnPoint.x, mapInfo.spawnPoint.y, width)) = 40;
 }
 
 void cppdungeon::world::Generator::generateRooms()

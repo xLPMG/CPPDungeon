@@ -2,10 +2,11 @@
 #include "WalkableTile.hpp"
 #include "PlaceholderTile.hpp"
 #include "WallTile.hpp"
+#include "PillarTile.hpp"
 
 cppdungeon::world::tiles::TileRegistry::TileRegistry()
 {
-    tiles.resize(34);
+    tiles.resize(44);
     tiles[0] = std::make_unique<PlaceholderTile>();
     tiles[1] = std::make_unique<WalkableTile>("./res/textures/map/floor/floor_plain.png");
 
@@ -43,6 +44,17 @@ cppdungeon::world::tiles::TileRegistry::TileRegistry()
     tiles[31] = std::make_unique<WalkableTile>("./res/textures/map/floor/floor_mud_sw.png");
     tiles[32] = std::make_unique<WalkableTile>("./res/textures/map/floor/floor_mud_w.png");
     tiles[33] = std::make_unique<WalkableTile>("./res/textures/map/floor/floor_mud_e.png");
+    tiles[34] = std::make_unique<WalkableTile>("./res/textures/map/floor/floor_ladder.png");
+
+    tiles[35] = std::make_unique<PillarTile>("./res/textures/map/deco/pillar.png", false, olc::vi2d(0, 0));
+    tiles[36] = std::make_unique<PillarTile>("./res/textures/map/deco/pillar.png", false, olc::vi2d(0, 16));
+    tiles[37] = std::make_unique<PillarTile>("./res/textures/map/deco/pillar.png", false, olc::vi2d(0, 32));
+    tiles[38] = std::make_unique<PillarTile>("./res/textures/map/deco/pillarLadder.png", false, olc::vi2d(0, 0));
+    tiles[39] = std::make_unique<PillarTile>("./res/textures/map/deco/pillarLadder.png", false, olc::vi2d(0, 16));
+    tiles[40] = std::make_unique<PillarTile>("./res/textures/map/deco/pillarLadder.png", false, olc::vi2d(0, 32));
+    tiles[41] = std::make_unique<PillarTile>("./res/textures/map/deco/pillarLadderBg.png", true, olc::vi2d(0, 0));
+    tiles[42] = std::make_unique<PillarTile>("./res/textures/map/deco/pillarLadderBg.png", true, olc::vi2d(0, 16));
+    tiles[43] = std::make_unique<PillarTile>("./res/textures/map/deco/pillarLadderBg.png", true, olc::vi2d(0, 32));
 }
 
 cppdungeon::world::tiles::TileRegistry::~TileRegistry()

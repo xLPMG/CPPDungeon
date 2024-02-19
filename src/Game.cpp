@@ -1,8 +1,4 @@
 #include "Game.hpp"
-#include "entities/Player.hpp"
-#include "world/Map.hpp"
-
-#include <memory>
 
 #ifdef WIN32
 #include <windows.h>
@@ -15,7 +11,9 @@ bool cppdungeon::Game::OnUserCreate()
     tileRegistry = std::make_unique<cppdungeon::world::tiles::TileRegistry>();
     map = std::make_unique<cppdungeon::world::Map>(1000, 99, 99, tileRegistry.get());
     camera = std::make_unique<cppdungeon::gfx::Camera>(olc::vf2d{0,0});
-    player = std::make_unique<cppdungeon::entities::Player>(olc::vf2d{0, 0});
+    entityManager = std::make_unique<cppdungeon::entities::EntityManager>();
+    playerEntityID = entityManager->addEntity<cppdungeon::entities::Player>();
+    player = dynamic_cast<cppdungeon::entities::Player*>(entityManager->getEntity(playerEntityID));
     player->setPosition(map->getSpawnPoint());
     return true;
 }
@@ -42,15 +40,17 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     }
 
     // UPDATE
-    player->update(fElapsedTime);
+    entityManager->updateAll(fElapsedTime);
 
     // RENDER
     camera->setOffset(player->getPosition() - GetScreenSize() / 2 + player->getSize() / 2);
     Clear(olc::Pixel(28, 17, 23));
 
     map->renderBackground(this, camera->getOffset(), GetScreenSize());
-    player->render(this, camera->getOffset());
+    entityManager->renderAll(this, camera->getOffset());
     map->renderForeground(this, camera->getOffset(), GetScreenSize());
+
+    DrawString({4, 4}, std::to_string(seed), olc::WHITE, 1);
 
     return true;
 }

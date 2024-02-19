@@ -12,37 +12,38 @@ namespace cppdungeon
 {
     namespace entities
     {
-
-        class Entity
-        {
-        protected:
-            olc::vf2d position;
-            olc::vf2d size;
-            f32 speed = 50.0f;
-            f32 sprintBoost = 2.0f;
-
-        public:
-            Entity(olc::vf2d position, olc::vf2d size) : position(position), size(size) {};
-            virtual void update(f32 &deltaTime) = 0;
-            virtual void render(olc::PixelGameEngine *pge, olc::vf2d offset) = 0;
-            virtual void move(i8 &x, i8 &y, bool sprinting, f32 &deltaTime, cppdungeon::world::Map* map) = 0;
-
-            void setPosition(olc::vf2d position)
-            {
-                this->position = position;
-            };
-
-            olc::vf2d getPosition()
-            {
-                return this->position;
-            };
-
-            olc::vf2d getSize()
-            {
-                return this->size;
-            };
-        };
+        class Entity;
     }
 }
+
+class cppdungeon::entities::Entity
+{
+protected:
+    olc::vf2d position;
+    olc::vf2d size;
+    f32 speed = 50.0f;
+    f32 sprintBoost = 2.0f;
+
+public:
+    Entity(olc::vf2d position, olc::vf2d size) : position(position), size(size){};
+    virtual void update(f32 &deltaTime) = 0;
+    virtual void render(olc::PixelGameEngine *pge, olc::vf2d offset) = 0;
+    virtual void move(i8 &x, i8 &y, bool sprinting, f32 &deltaTime, cppdungeon::world::Map *map) = 0;
+
+    void setPosition(olc::vf2d position)
+    {
+        this->position = position;
+    };
+
+    olc::vf2d getPosition()
+    {
+        return this->position;
+    };
+
+    olc::vf2d getSize()
+    {
+        return this->size;
+    };
+};
 
 #endif

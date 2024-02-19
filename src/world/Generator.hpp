@@ -18,7 +18,7 @@ namespace cppdungeon
 class cppdungeon::world::Generator
 {
 
-using recti32 = olc::utils::geom2d::rect<i32>;
+    using recti32 = olc::utils::geom2d::rect<i32>;
 
 private:
     static constexpr olc::vi2d N = {0, -1};
@@ -75,12 +75,21 @@ private:
     void decorateFloor();
 
 public:
+    struct MapInfo
+    {
+        olc::vi2d spawnPoint = {0, 0};
+        olc::vi2d bossPoint = {0, 0};
+    };
+
     void generate(u32 seed,
                   u16 width,
                   u16 height,
                   std::vector<usize> &tilesBackground,
                   std::vector<usize> &tilesForeground,
-                  olc::vf2d &spawnPos);
+                  MapInfo &mapInfo);
+
+private:
+    MapInfo mapInfo;
 };
 
 #endif
