@@ -40,6 +40,7 @@ void cppdungeon::world::Generator::generate(u32 seed, u16 width, u16 height, std
     mapInfo.spawnPoint = spawnRoom.middle();
     olc::utils::geom2d::rect<i32> bossRoom = rooms.back();
     mapInfo.bossPoint = bossRoom.middle();
+    tilesBackground.at(idx(mapInfo.bossPoint, width)) = 34;
 
     /////////////////////
     // PATH GENERATION //
@@ -72,6 +73,7 @@ void cppdungeon::world::Generator::generate(u32 seed, u16 width, u16 height, std
     // MAP DECORATION //
     ////////////////////
     buildWalls();
+    placeStairs();
     decorateFloor();
 
     // decorate spawn
@@ -576,6 +578,86 @@ void cppdungeon::world::Generator::decorateFloor()
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+void cppdungeon::world::Generator::placeStairs()
+{
+    for (i32 y = bounds.pos.y; y < bounds.pos.y + bounds.size.y; y++)
+    {
+        for (i32 x = bounds.pos.x; x < bounds.pos.x + bounds.size.x; x++)
+        {
+            olc::vi2d pos = {x, y};
+            if (tilesBackgroundPtr->at(idx(pos, width)) != 1)
+                continue;
+
+            /*
+            WxxxW
+            WxoxW -> o = self, x = empty floor, W = wall
+            WxxxW
+            */
+            std::vector<i32> neighbors;
+            neighbors.push_back(idx(pos + N, width));
+            neighbors.push_back(idx(pos + S, width));
+            neighbors.push_back(idx(pos + W, width));
+            neighbors.push_back(idx(pos + E, width));
+            neighbors.push_back(idx(pos + N + W, width));
+            neighbors.push_back(idx(pos + N + E, width));
+            neighbors.push_back(idx(pos + S + W, width));
+            neighbors.push_back(idx(pos + S + E, width));
+
+            bool surroundingTilesFree = true;
+            for (auto &n : neighbors)
+            {
+                if (tilesBackgroundPtr->at(n) != 1)
+                {
+                    surroundingTilesFree = false;
+                    break;
+                }
+            }
+
+            if (!surroundingTilesFree)
+                continue;
+
+            // check walls
+            std::vector<i32> wallTiles;
+            wallTiles.push_back(idx(pos + N + 2 * E, width));
+            wallTiles.push_back(idx(pos + N + 2 * W, width));
+            wallTiles.push_back(idx(pos + 2 * E, width));
+            wallTiles.push_back(idx(pos + 2 * W, width));
+            wallTiles.push_back(idx(pos + S + 2 * E, width));
+            wallTiles.push_back(idx(pos + S + 2 * W, width));
+
+            bool surroundedbyWalls = true;
+            for (auto &w : wallTiles)
+            {
+                if (tilesBackgroundPtr->at(w) < 2 || tilesBackgroundPtr->at(w) > 21)
+                {
+                    surroundedbyWalls = false;
+                    break;
+                }
+            }
+
+            if (!surroundedbyWalls)
+                continue;
+
+            // only place at percentage of tiles
+            if (rand() % 100 < stairsProbability)
+            {
+                // ready to put stairs
+                tilesBackgroundPtr->at(idx(pos + N + W, width)) = 44;
+                tilesBackgroundPtr->at(idx(pos + N, width)) = 45;
+                tilesBackgroundPtr->at(idx(pos + N + E, width)) = 46;
+
+                tilesBackgroundPtr->at(idx(pos + W, width)) = 47;
+                tilesBackgroundPtr->at(idx(pos, width)) = 48;
+                tilesBackgroundPtr->at(idx(pos + E, width)) = 49;
+
+                tilesBackgroundPtr->at(idx(pos + S + W, width)) = 50;
+                tilesBackgroundPtr->at(idx(pos + S, width)) = 51;
+                tilesBackgroundPtr->at(idx(pos + S + E, width)) = 52;
             }
         }
     }

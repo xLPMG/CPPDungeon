@@ -40,6 +40,7 @@ public:
     bool collides(olc::vf2d coordinate, usize &tileId);
     void regenerate(u32 seed);
     olc::vf2d getSpawnPoint();
+    usize getTileID(olc::vf2d position);
     u16 getWidth(){
         return mapSize.x;
     }

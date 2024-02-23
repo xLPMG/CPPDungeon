@@ -56,6 +56,7 @@ private:
         }
     };
     i32 loopProbability = 5;
+    i32 stairsProbability = 5;
 
     void generateRooms();
     void carve(olc::vi2d pos,
@@ -73,6 +74,8 @@ private:
     void buildWalls();
 
     void decorateFloor();
+
+    void placeStairs();
 
 public:
     struct MapInfo

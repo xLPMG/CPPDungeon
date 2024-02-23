@@ -3,10 +3,11 @@
 #include "PlaceholderTile.hpp"
 #include "WallTile.hpp"
 #include "PillarTile.hpp"
+#include "StairsTile.hpp"
 
 cppdungeon::world::tiles::TileRegistry::TileRegistry()
 {
-    tiles.resize(44);
+    tiles.resize(53);
     tiles[0] = std::make_unique<PlaceholderTile>();
     tiles[1] = std::make_unique<WalkableTile>("./res/textures/map/floor/floor_plain.png");
 
@@ -55,6 +56,19 @@ cppdungeon::world::tiles::TileRegistry::TileRegistry()
     tiles[41] = std::make_unique<PillarTile>("./res/textures/map/deco/pillarLadderBg.png", true, olc::vi2d(0, 0));
     tiles[42] = std::make_unique<PillarTile>("./res/textures/map/deco/pillarLadderBg.png", true, olc::vi2d(0, 16));
     tiles[43] = std::make_unique<PillarTile>("./res/textures/map/deco/pillarLadderBg.png", true, olc::vi2d(0, 32));
+
+    // VERTICAL STAIRS
+    tiles[44] = std::make_unique<StairsTile>("./res/textures/map/floor/stairs_top.png", olc::vi2d(0, 0), false);  // top left
+    tiles[45] = std::make_unique<StairsTile>("./res/textures/map/floor/stairs_top.png", olc::vi2d(8, 0), false);  // top center
+    tiles[46] = std::make_unique<StairsTile>("./res/textures/map/floor/stairs_top.png", olc::vi2d(16, 0), false); // top right
+
+    tiles[47] = std::make_unique<StairsTile>("./res/textures/map/floor/stairs_mid.png", olc::vi2d(0, 0), false);  // middle left
+    tiles[48] = std::make_unique<StairsTile>("./res/textures/map/floor/stairs_mid.png", olc::vi2d(8, 0), false);  // middle center
+    tiles[49] = std::make_unique<StairsTile>("./res/textures/map/floor/stairs_mid.png", olc::vi2d(16, 0), false); // middle right
+
+    tiles[50] = std::make_unique<StairsTile>("./res/textures/map/floor/stairs_bottom.png", olc::vi2d(0, 0), false);  // bottom left
+    tiles[51] = std::make_unique<StairsTile>("./res/textures/map/floor/stairs_bottom.png", olc::vi2d(8, 0), false);  // bottom center
+    tiles[52] = std::make_unique<StairsTile>("./res/textures/map/floor/stairs_bottom.png", olc::vi2d(16, 0), false); // bottom right
 }
 
 cppdungeon::world::tiles::TileRegistry::~TileRegistry()

@@ -37,6 +37,7 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
         map->regenerate(seed);
         player->setPosition(map->getSpawnPoint());
         seed++;
+        level++;
     }
 
     // UPDATE
@@ -50,7 +51,7 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     entityManager->renderAll(this, camera->getOffset());
     map->renderForeground(this, camera->getOffset(), GetScreenSize());
 
-    DrawString({4, 4}, std::to_string(seed), olc::WHITE, 1);
+    DrawString({4, 4}, std::to_string(level), olc::WHITE, 1);
 
     return true;
 }

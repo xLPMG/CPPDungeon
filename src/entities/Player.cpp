@@ -70,6 +70,12 @@ void cppdungeon::entities::Player::move(i8 &x, i8 &y, bool sprinting, f32 &delta
         actualSpeedX *= 0.707;
         actualSpeedY *= 0.707;
     }
+    // stairs
+    if (map->getTileID(position) >= 44 && map->getTileID(position) <= 49)
+    {
+        actualSpeedX *= 0.5;
+        actualSpeedY *= 0.5;
+    }
 
     if (actualSpeedX < 0)
     {

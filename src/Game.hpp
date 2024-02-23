@@ -37,7 +37,7 @@ private:
     u32 playerEntityID = 0;
     cppdungeon::entities::Player *player;
 
-    //i32 seedOffset = rand() % 1000000;
+    u32 level = 0;
     i32 seed = 1;
     
     bool OnUserCreate() override;
