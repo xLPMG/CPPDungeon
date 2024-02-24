@@ -15,7 +15,7 @@ cppdungeon::entities::Player::~Player()
 {
 }
 
-void cppdungeon::entities::Player::update(float &deltaTime)
+void cppdungeon::entities::Player::update(float &deltaTime, cppdungeon::world::Map *map)
 {
     hitbox = {position.x + bounds.x, position.y + bounds.y, bounds.width, bounds.height};
 
@@ -39,7 +39,7 @@ void cppdungeon::entities::Player::update(float &deltaTime)
     }
 }
 
-void cppdungeon::entities::Player::render(olc::PixelGameEngine *pge, olc::vf2d offset)
+void cppdungeon::entities::Player::render(olc::PixelGameEngine *pge, olc::vf2d &offset)
 {
     switch (direction)
     {

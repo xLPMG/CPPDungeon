@@ -13,8 +13,13 @@ bool cppdungeon::Game::OnUserCreate()
     camera = std::make_unique<cppdungeon::gfx::Camera>(olc::vf2d{0,0});
     entityManager = std::make_unique<cppdungeon::entities::EntityManager>();
     playerEntityID = entityManager->addEntity<cppdungeon::entities::Player>();
-    player = dynamic_cast<cppdungeon::entities::Player*>(entityManager->getEntity(playerEntityID));
+    entityManager->setPlayer(playerEntityID);
+    player = dynamic_cast<cppdungeon::entities::Player*>(entityManager->getPlayer());
     player->setPosition(map->getSpawnPoint());
+
+    u32 tinyId = entityManager->addEntity<cppdungeon::entities::TinyZombie>();
+    entityManager->getEntity(tinyId)->setPosition(player->getPosition() + olc::vf2d{4, 4}+TILE_SIZE);
+    entityManager->getEntity(tinyId)->followWithin(player, 1*TILE_SIZE.x);
     return true;
 }
 
@@ -41,7 +46,7 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     }
 
     // UPDATE
-    entityManager->updateAll(fElapsedTime);
+    entityManager->updateAll(fElapsedTime, map.get());
 
     // RENDER
     camera->setOffset(player->getPosition() - GetScreenSize() / 2 + player->getSize() / 2);

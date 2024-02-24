@@ -1,12 +1,12 @@
 /**
- * @file Player.cpp
+ * @file TinyZombie.cpp
  *
- * @brief This file implements the Player class.
+ * @brief TinyZombie entity class.
  *
  * @author Luca-Philipp Grumbach
  */
-#ifndef CPPDUNGEON_ENTITIES_PLAYER_HPP
-#define CPPDUNGEON_ENTITIES_PLAYER_HPP
+#ifndef CPPDUNGEON_ENTITIES_TINY_ZOMBIE_HPP
+#define CPPDUNGEON_ENTITIES_TINY_ZOMBIE_HPP
 
 #include "Entity.hpp"
 #include "../gfx/Animation.hpp"
@@ -15,29 +15,28 @@ namespace cppdungeon
 {
     namespace entities
     {
-        class Player;
+        class TinyZombie;
     }
 }
 
-class cppdungeon::entities::Player : public Entity
+class cppdungeon::entities::TinyZombie : public Entity
 {
 private:
     std::unique_ptr<gfx::Animation> idleAnimation;
-    std::unique_ptr<gfx::Animation> frontAnimation;
-    std::unique_ptr<gfx::Animation> backAnimation;
     std::unique_ptr<gfx::Animation> leftAnimation;
     std::unique_ptr<gfx::Animation> rightAnimation;
 
-    rect bounds = {3, 10, 10, 6};
+    rect bounds = {0, 0, 16, 16};
     rect hitbox = {0, 0, 0, 0};
+
     Direction direction = Direction::IDLE;
 
 public:
-    Player(olc::vf2d position = {0, 0});
-    ~Player();
+    TinyZombie(olc::vf2d position = {0, 0});
+    ~TinyZombie();
     void update(float &deltaTime, cppdungeon::world::Map *map);
     void render(olc::PixelGameEngine *pge, olc::vf2d &offset);
-    void move(i8 &x, i8 &y, bool sprinting, f32 &deltaTime, cppdungeon::world::Map *map);
+    void followWithin(cppdungeon::entities::Entity *target, f32 distance) override;
 };
 
 #endif

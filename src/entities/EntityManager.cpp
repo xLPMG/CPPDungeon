@@ -5,11 +5,11 @@ cppdungeon::entities::Entity *cppdungeon::entities::EntityManager::getEntity(u32
     return entities.at(index).get();
 }
 
-void cppdungeon::entities::EntityManager::updateAll(f32 &deltaTime)
+void cppdungeon::entities::EntityManager::updateAll(f32 &deltaTime, cppdungeon::world::Map *map)
 {
     for (auto &entity : entities)
     {
-        entity->update(deltaTime);
+        entity->update(deltaTime, map);
     }
 }
 

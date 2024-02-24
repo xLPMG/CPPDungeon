@@ -40,7 +40,7 @@ void cppdungeon::world::Generator::generate(u32 seed, u16 width, u16 height, std
     mapInfo.spawnPoint = spawnRoom.middle();
     olc::utils::geom2d::rect<i32> bossRoom = rooms.back();
     mapInfo.bossPoint = bossRoom.middle();
-    tilesBackground.at(idx(mapInfo.bossPoint, width)) = 34;
+    
 
     /////////////////////
     // PATH GENERATION //
@@ -73,6 +73,7 @@ void cppdungeon::world::Generator::generate(u32 seed, u16 width, u16 height, std
     // MAP DECORATION //
     ////////////////////
     buildWalls();
+    tilesBackground.at(idx(mapInfo.bossPoint, width)) = 34;
     placeStairs();
     decorateFloor();
 

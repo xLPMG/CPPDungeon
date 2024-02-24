@@ -12,6 +12,7 @@
 #include "entities/EntityManager.hpp"
 #include "entities/Entity.hpp"
 #include "entities/Player.hpp"
+#include "entities/TinyZombie.hpp"
 #include "world/Map.hpp"
 #include "world/tiles/TileRegistry.hpp"
 #include <chrono>

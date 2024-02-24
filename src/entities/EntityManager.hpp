@@ -18,6 +18,7 @@ class cppdungeon::entities::EntityManager
 {
 private:
     std::vector<std::unique_ptr<cppdungeon::entities::Entity>> entities;
+    u32 playerIndex = 0;
 
 public:
     template <typename T>
@@ -28,9 +29,15 @@ public:
         return entities.size() - 1;
     }
     cppdungeon::entities::Entity *getEntity(u32 index);
-    void updateAll(f32 &deltaTime);
+    void updateAll(f32 &deltaTime,  cppdungeon::world::Map *map);
     void renderAll(olc::PixelGameEngine *pge, olc::vf2d offset);
     void clear();
+    void setPlayer(u32 index){
+        playerIndex = index;
+    }
+    cppdungeon::entities::Entity *getPlayer(){
+        return entities.at(playerIndex).get();
+    }
 };
 
 #endif
