@@ -29,15 +29,11 @@ public:
         return entities.size() - 1;
     }
     cppdungeon::entities::Entity *getEntity(u32 index);
-    void updateAll(f32 &deltaTime,  cppdungeon::world::Map *map);
+    void updateAll(f32 &deltaTime, cppdungeon::world::Map *map);
     void renderAll(olc::PixelGameEngine *pge, olc::vf2d offset);
     void clear();
-    void setPlayer(u32 index){
-        playerIndex = index;
-    }
-    cppdungeon::entities::Entity *getPlayer(){
-        return entities.at(playerIndex).get();
-    }
+    void setPlayer(u32 index);
+    cppdungeon::entities::Entity *getPlayer();
 };
 
 #endif

@@ -25,3 +25,12 @@ void cppdungeon::entities::EntityManager::clear()
 {
     entities.clear();
 }
+
+void cppdungeon::entities::EntityManager::setPlayer(u32 index)
+{
+    playerIndex = index;
+}
+cppdungeon::entities::Entity *cppdungeon::entities::EntityManager::getPlayer()
+{
+    return entities.at(playerIndex).get();
+}

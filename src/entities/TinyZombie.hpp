@@ -1,6 +1,4 @@
-/**
- * @file TinyZombie.cpp
- *
+/** 
  * @brief TinyZombie entity class.
  *
  * @author Luca-Philipp Grumbach
