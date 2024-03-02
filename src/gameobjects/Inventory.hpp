@@ -20,31 +20,10 @@ private:
 
 public:
     // Add item to inventory
-    void addItem(const Item &item)
-    {
-        int itemId = item.getId();
-        if (items.find(itemId) == items.end())
-        {
-            items.insert(std::make_pair(itemId, item));
-        }
-        else
-        {
-            items[itemId].addQuantity(item.getQuantity());
-        }
-    }
+    void addItem(const Item &item);
 
     // Remove item from inventory
-    void removeItem(u32 itemId, int amount)
-    {
-        if (items.find(itemId) != items.end())
-        {
-            items[itemId].addQuantity(amount);
-            if (items[itemId].getQuantity() == 0)
-            {
-                items.erase(itemId);
-            }
-        }
-    }
+    void removeItem(u32 itemId, int amount);
 };
 
 #endif
