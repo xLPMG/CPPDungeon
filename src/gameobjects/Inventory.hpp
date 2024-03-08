@@ -16,11 +16,11 @@ namespace cppdungeon
 class cppdungeon::gameobjects::Inventory
 {
 private:
-    std::unordered_map<u32, Item> items;
+    std::unordered_map<u32, std::unique_ptr<Item>> items;
 
 public:
     // Add item to inventory
-    void addItem(const Item &item);
+    void addItem(std::string itemName, u32 itemId, u16 itemQuantity, std::string iconFile);
 
     // Remove item from inventory
     void removeItem(u32 itemId, int amount);

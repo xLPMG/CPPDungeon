@@ -15,6 +15,7 @@
 #include "entities/TinyZombie.hpp"
 #include "world/Map.hpp"
 #include "world/tiles/TileRegistry.hpp"
+#include "gfx/HUD.hpp"
 #include <chrono>
 #include <memory>
 
@@ -37,6 +38,7 @@ private:
     std::unique_ptr<cppdungeon::entities::EntityManager> entityManager;
     u32 playerEntityID = 0;
     cppdungeon::entities::Player *player;
+    std::unique_ptr<cppdungeon::gfx::HUD> hud;
 
     u32 level = 0;
     i32 seed = 1;

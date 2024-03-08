@@ -18,7 +18,7 @@ private:
 public:
     ItemBar();
     ~ItemBar();
-    void draw();
+    void render(olc::PixelGameEngine *pge);
     void update();
     void setItem(int index, int item);
     int getItem(int index);

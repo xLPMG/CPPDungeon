@@ -26,6 +26,9 @@ protected:
     cppdungeon::entities::Entity *followTarget = nullptr;
     f32 followRange = 0.0f;
 
+    i32 maxHealth = 100;
+    i32 health = maxHealth;
+
     enum class Direction
     {
         LEFT,
@@ -55,9 +58,22 @@ public:
         return this->size;
     };
 
-    virtual void followWithin(cppdungeon::entities::Entity *target, f32 distance){}
+    i32 getHealth() { return this->health; }
 
-    void attackWithin(cppdungeon::entities::Entity *target, f32 distance){}    
+    i32 getMaxHealth() { return this->maxHealth; }
+
+    void damage(f32 amount)
+    {
+        this->health -= amount;
+        if (this->health < 0)
+        {
+            this->health = 0;
+        }
+    }
+
+    virtual void followWithin(cppdungeon::entities::Entity *target, f32 distance) {}
+
+    void attackWithin(cppdungeon::entities::Entity *target, f32 distance) {}
 };
 
 #endif

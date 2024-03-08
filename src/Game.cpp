@@ -17,6 +17,8 @@ bool cppdungeon::Game::OnUserCreate()
     player = dynamic_cast<cppdungeon::entities::Player*>(entityManager->getPlayer());
     player->setPosition(map->getSpawnPoint());
 
+    hud = std::make_unique<cppdungeon::gfx::HUD>(player);
+
     u32 tinyId = entityManager->addEntity<cppdungeon::entities::TinyZombie>();
     entityManager->getEntity(tinyId)->setPosition(player->getPosition() + olc::vf2d{4, 4}+TILE_SIZE);
     entityManager->getEntity(tinyId)->followWithin(player, 1*TILE_SIZE.x);
@@ -57,7 +59,7 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     map->renderForeground(this, camera->getOffset(), GetScreenSize());
 
     DrawString({4, 4}, std::to_string(level), olc::WHITE, 1);
-
+    hud->render(this);
     return true;
 }
 

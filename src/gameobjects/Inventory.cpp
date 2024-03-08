@@ -1,15 +1,14 @@
 #include "Inventory.hpp"
 
-void cppdungeon::gameobjects::Inventory::addItem(const Item &item)
+void cppdungeon::gameobjects::Inventory::addItem(std::string itemName, u32 itemId, u16 itemQuantity, std::string iconFile)
 {
-    int itemId = item.getId();
     if (items.find(itemId) == items.end())
     {
-        items.insert(std::make_pair(itemId, item));
+        items.insert(std::make_pair(itemId, std::make_unique<Item>(itemName, itemId, itemQuantity, iconFile)));
     }
     else
     {
-        items[itemId].addQuantity(item.getQuantity());
+        items.at(itemId)->addQuantity(itemQuantity);
     }
 }
 
@@ -17,8 +16,8 @@ void cppdungeon::gameobjects::Inventory::removeItem(u32 itemId, int amount)
 {
     if (items.find(itemId) != items.end())
     {
-        items[itemId].addQuantity(amount);
-        if (items[itemId].getQuantity() == 0)
+        items.at(itemId)->addQuantity(amount);
+        if (items.at(itemId)->getQuantity() == 0)
         {
             items.erase(itemId);
         }

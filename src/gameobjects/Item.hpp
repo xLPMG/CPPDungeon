@@ -17,7 +17,6 @@ namespace cppdungeon
 class cppdungeon::gameobjects::Item
 {
 private:
-    private:
     std::string name;
     u32 id;
     u16 quantity;
