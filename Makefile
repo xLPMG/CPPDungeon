@@ -133,6 +133,16 @@ COMPDBS := $(OBJS:.o=.json)
 # All files (sources and headers)
 FILES := $(shell find $(SRC_DIR) $(INCLUDE_DIR) -name '*.cpp' -o -name '*.h' -o -name '*.hpp' -o -name '*.inl')
 
+ifeq ($(OS),macos)
+	FILES := $(shell find $(SRC_DIR)$(INCLUDE_DIR) -name '*.cpp' -o -name '*.h' -o -name '*.hpp' -o -name '*.inl')
+else ifeq ($(OS),linux)
+	FILES := $(shell find $(SRC_DIR) $(INCLUDE_DIR) -name '*.cpp' -o -name '*.h' -o -name '*.hpp' -o -name '*.inl')
+else ifeq ($(OS),windows)
+	find_files = $(foreach n,$1,$(shell C:\\\msys64\\\usr\\\bin\\\find.exe -L $2 -name "$n"))
+	FILES := $(call find_files,*.cpp *.h *.hpp *.inl,$(SRC_DIR))
+	FILES += $(call find_files,*.cpp *.h *.hpp *.inl,$(INCLUDE_DIR))
+endif
+
 ################################################################################
 #### Targets
 ################################################################################
