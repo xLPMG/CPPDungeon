@@ -1,0 +1,34 @@
+name: Build and Publish Release
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up build environment
+        # Install necessary dependencies for compilation (if needed)
+
+      - name: Compile Project
+        run: make release=1
+
+      - name: Copy assets
+        run: make release=1 copyassets
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }} - ${{ matrix.os }}
+          draft: false
+          prerelease: false
