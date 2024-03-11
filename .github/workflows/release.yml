@@ -1,6 +1,8 @@
 name: Build and Publish Release
-on: [workflow_dispatch]
-
+on:
+  push:
+    tags:
+      - '*'
 jobs:
   build:
     strategy:
@@ -13,7 +15,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up build environment
+#      - name: Set up build environment
         # Install necessary dependencies for compilation (if needed)
 
       - name: Compile Project
