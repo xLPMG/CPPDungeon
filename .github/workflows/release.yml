@@ -31,3 +31,4 @@ jobs:
           release_name: Release ${{ github.ref }} - ${{ matrix.os }}
           draft: false
           prerelease: false
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
