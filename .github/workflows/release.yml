@@ -15,6 +15,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
+      - name: Install dependencies
+        run: make dependencies-${{ matrix.os }}
+
       - name: Compile Project
         run: make release=1
 

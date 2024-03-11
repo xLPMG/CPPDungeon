@@ -155,6 +155,21 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 # Include automatically generated dependencies
 -include $(DEPS)
 
+# Install dependencies
+.PHONY: dependencies-linux
+dependencies-ubuntu-latest:
+	@echo "Installing dependencies for Linux"
+	@sudo apt-get install -y libx11-dev libgl1-mesa-dev libpng-dev libstdc++-10-dev
+
+.PHONY: dependencies-macos
+dependencies-macOS-latest:
+	@echo "Installing dependencies for macOS"
+	@brew install libpng
+
+.PHONY: dependencies-windows
+dependencies-windows-latest:
+	@echo "Installing dependencies for Windows"
+
 # Install packaged program
 .PHONY: install
 install: all copyassets
