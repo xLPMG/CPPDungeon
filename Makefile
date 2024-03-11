@@ -131,7 +131,7 @@ DEPS := $(OBJS:.o=.d)
 COMPDBS := $(OBJS:.o=.json)
 
 # All files (sources and headers)
-FILES := $(shell find $(SRC_DIR) $(INCLUDE_DIR) -name '*.cpp' -o -name '*.h' -o -name '*.hpp' -o -name '*.inl')
+# FILES := $(shell find $(SRC_DIR) $(INCLUDE_DIR) -name '*.cpp' -o -name '*.h' -o -name '*.hpp' -o -name '*.inl')
 
 ifeq ($(OS),macos)
 	FILES := $(shell find $(SRC_DIR)$(INCLUDE_DIR) -name '*.cpp' -o -name '*.h' -o -name '*.hpp' -o -name '*.inl')
