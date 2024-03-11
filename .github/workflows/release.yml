@@ -15,9 +15,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-#      - name: Set up build environment
-        # Install necessary dependencies for compilation (if needed)
-
       - name: Compile Project
         run: make release=1
 
