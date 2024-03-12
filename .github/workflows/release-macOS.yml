@@ -27,14 +27,23 @@ jobs:
         id: generate_release_tag
         uses: amitsingh-007/next-release-tag@v5.0.0
         with:
-          github_token: ${{ secrets.ACTIONS_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_prefix: 'v'
           tag_template: 'yyyy.mm.dd.i'
-          
-      - name: Create Release
-        uses: ncipollo/release-action@v1.14.0
-        with:
-          tag: ${{ steps.generate_release_tag.outputs.next_release_tag }}
-          name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }} - MacOS
-          token: ${{ secrets.ACTIONS_TOKEN }}
 
+      - name: Archive release
+        uses: thedoctor0/zip-release@0.7.6
+        with:
+          type: 'zip'
+          filename: 'macOS.zip'
+          path: /bin/macOS
+          
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: macOS.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
+          name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }} - MacOS
+          make_latest: true
