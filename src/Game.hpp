@@ -2,10 +2,10 @@
 #define GAME_HPP
 
 #define OLC_IGNORE_VEC2D
-#include "olcUTIL_Geometry2D.h"
+#include <olcUTIL_Geometry2D.h>
 
 #define OLC_PGE_APPLICATION
-#include "olcPixelGameEngine.h"
+#include <olcPixelGameEngine.h>
 
 #include "constants.hpp"
 #include "gfx/Camera.hpp"

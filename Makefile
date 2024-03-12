@@ -14,7 +14,9 @@ ifeq ($(OS),Windows_NT)
 	OS = windows
 else
 	UNAME := $(shell uname -s)
-	ifeq ($(UNAME),Darwin)
+	ifneq (,$(findstring _NT,$(UNAME)))
+		OS = windows
+	else ifeq ($(UNAME),Darwin)
 		OS = macOS
 	else ifeq ($(UNAME),Linux)
 		OS = linux
@@ -84,7 +86,7 @@ DEP = $(SRC:%.cpp=$(BIN_DIR)/%.d)
 
 # DIRECTORY COPY COMMAND
 ifeq ($(OS),windows)
-    COPY_DIRS_CMD = cmd " /c robocopy "$(SRC_DIR)" "$(BIN_DIR)/$(SRC_DIR)" /e /xf * /mt"
+    COPY_DIRS_CMD = cmd " /c robocopy $(SRC_DIR) $(BIN_DIR)/$(SRC_DIR) /e /xf * /mt /NFL /NDL /NJH /NJS /nc /ns /np"
 else ifeq ($(OS),macOS)
 	COPY_DIRS_CMD = rsync -a --include '*/' --exclude '*' "$(SRC_DIR)" "$(BIN_DIR)"
 else ifeq ($(OS),linux)
@@ -93,7 +95,7 @@ endif
 
 # ASSETS COPY COMMAND
 ifeq ($(OS),windows)
-    COPY_ASSETS_CMD = cmd " /c robocopy "$(ASSETS_DIR)" "$(BIN_DIR)/$(ASSETS_DIR)" /s /purge /mt"
+    COPY_ASSETS_CMD = cmd " /c robocopy $(ASSETS_DIR) $(BIN_DIR)/$(ASSETS_DIR) /s /mt /NFL /NDL /NJH /NJS /nc /ns /np"
 else ifeq ($(OS),macOS)
 	COPY_ASSETS_CMD = rsync -a "$(ASSETS_DIR)" "$(BIN_DIR)"
 else ifeq ($(OS),linux)
@@ -128,6 +130,7 @@ clean:
 
 all:
 	@echo "Building for $(OS)"
+	@$(MAKE) -s clean
 	@$(MAKE) -s dungeon
 	@$(MAKE) -s copyassets
 	@$(MAKE) -s clean
