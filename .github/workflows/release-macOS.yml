@@ -36,7 +36,6 @@ jobs:
         with:
           type: 'zip'
           filename: 'macOS.zip'
-          path: /bin/macOS
           
       - name: Publish release
         uses: softprops/action-gh-release@v2
