@@ -58,7 +58,7 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     entityManager->renderAll(this, camera->getOffset());
     map->renderForeground(this, camera->getOffset(), GetScreenSize());
 
-    DrawString({4, 4}, std::to_string(level), olc::WHITE, 1);
+    DrawString({4, 16}, std::to_string(level), olc::WHITE, 1);
     hud->render(this);
     return true;
 }
@@ -80,6 +80,8 @@ int main()
     width = 1920;
     height = 1080;
 #endif
+    width = 1200;
+    height = 600;
     cppdungeon::i8 scale = 4;
     cppdungeon::Game demo;
     if (demo.Construct(width / scale, height / scale, scale, scale))
