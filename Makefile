@@ -1,93 +1,134 @@
-print-%:; @echo $($*)
+######################################################################
+# Makefile for CPPDungeon
+# Author: 	Luca-Philipp Grumbach
+######################################################################
 
+EXEC = dungeon
+
+# TOOLS
 CXX = g++
 LD = g++
 
-# library paths
-PATH_LIB = lib
-INCFLAGS = -I$(PATH_LIB)
+# TARGET OS
+ifeq ($(OS),Windows_NT)
+	OS = windows
+else
+	UNAME := $(shell uname -s)
+	ifeq ($(UNAME),Darwin)
+		OS = macOS
+	else ifeq ($(UNAME),Linux)
+		OS = linux
+	else
+    	$(error OS not supported by this Makefile)
+	endif
+endif
+
+# DIRECTORIES
+SRC_DIR = src
+BIN_DIR_ROOT = bin
+ASSETS_DIR = res
+LIB_DIR= lib
+
+# OS-SPECIFIC DIRECTORIES
+BIN_DIR := $(BIN_DIR_ROOT)/$(OS)
+ifeq ($(OS),windows)
+	# Windows 32-bit
+	ifeq ($(win32),1)
+		BIN_DIR := $(BIN_DIR)32
+	# Windows 64-bit
+	else
+		BIN_DIR := $(BIN_DIR)64
+	endif
+endif
+
+
+# INCLUDES
+INCFLAGS = -I$(LIB_DIR)
 INCFLAGS += -I/usr/local/include
 
+# COMPILER FLAGS
 CXXFLAGS  = -std=c++20
 CXXFLAGS += -O2
 CXXFLAGS += -g
 CXXFLAGS += -Wall
 CXXFLAGS += -Wextra
 CXXFLAGS += -Wpedantic
-CXXFLAGS += -Wfloat-equal
-CXXFLAGS += -Wstrict-aliasing
-CXXFLAGS += -Wswitch-default
-CXXFLAGS += -Wformat=2
-CXXFLAGS += -Wno-unused-parameter
-CXXFLAGS += -Wno-strict-prototypes
-CXXFLAGS += -Wno-fixed-enum-extension
-CXXFLAGS += -Wno-int-to-void-pointer-cast
-CXXFLAGS += -Wno-gnu-statement-expression
-CXXFLAGS += -Wno-gnu-compound-literal-initializer
-CXXFLAGS += -Wno-gnu-zero-variadic-macro-arguments
-CXXFLAGS += -Wno-gnu-empty-struct
-CXXFLAGS += -Wno-gnu-auto-type
-CXXFLAGS += -Wno-gnu-empty-initializer
-CXXFLAGS += -Wno-gnu-pointer-arith
 
-LDFLAGS = -lm
-LDFLAGS += -lstdc++
+# LINKER FLAGS
+LDFLAGS = -lm -lstdc++
 
-BIN = bin
-UNAME := $(shell uname -s)
-ifeq ($(UNAME),Darwin)
+# LINKER LIBRARIES
+ifeq ($(OS),macOS)
+	LDFLAGS += -framework OpenGL -framework GLUT -framework Carbon -lpng -L/usr/local/lib
+	LDFLAGS += -framework CoreGraphics -framework Foundation
+else ifeq ($(OS),linux)
+	LDFLAGS += -lX11 -lGL -lpthread -lpng -lstdc++fs
+else ifeq ($(OS),windows)
+	LDFLAGS += -luser32 -lgdi32 -lopengl32 -lgdiplus -lShlwapi -ldwmapi -lstdc++fs -static -std=c++20
+endif
+
+# GATHER SOURCES
+ifeq ($(OS),macOS)
 	SRC = $(shell find src -name "*.cpp")
-else ifeq ($(UNAME),Linux)
+else ifeq ($(OS),linux)
 	SRC = $(shell find src -name "*.cpp")
-else ifeq ($(OS),Windows_NT)
+else ifeq ($(OS),windows)
 	find_files = $(foreach n,$1,$(shell C:\\\msys64\\\usr\\\bin\\\find.exe -L $2 -name "$n"))
 	SRC = $(call find_files,*.cpp,src)
 	CXX += -mconsole
 endif
-OBJ = $(SRC:%.cpp=$(BIN)/%.o)
-DEP = $(SRC:%.cpp=$(BIN)/%.d)
-OUT = $(BIN)/game
 
+OBJ = $(SRC:%.cpp=$(BIN_DIR)/%.o)
+DEP = $(SRC:%.cpp=$(BIN_DIR)/%.d)
 -include $(DEP)
 
-ifeq ($(UNAME),Darwin)
-	CXX = $(shell brew --prefix llvm)/bin/clang
-	LD = $(shell brew --prefix llvm)/bin/clang
-	LDFLAGS += -framework OpenGL -framework GLUT -framework Carbon -lpng -L/usr/local/lib
-	LDFLAGS += -framework CoreGraphics -framework Foundation
-else ifeq ($(UNAME),Linux)
-	LDFLAGS += -lX11 -lGL -lpthread -lpng -lstdc++fs
-else ifeq ($(OS),Windows_NT)
-	LDFLAGS += -luser32 -lgdi32 -lopengl32 -lgdiplus -lShlwapi -ldwmapi -lstdc++fs -static -std=c++20
+# DIRECTORY COPY COMMAND
+ifeq ($(OS),windows)
+    COPY_DIRS_CMD = cmd " /c robocopy "$(SRC_DIR)" "$(BIN_DIR)/$(SRC_DIR)" /e /xf * /mt"
+else ifeq ($(OS),macOS)
+	COPY_DIRS_CMD = rsync -a --include '*/' --exclude '*' "$(SRC_DIR)" "$(BIN_DIR)"
+else ifeq ($(OS),linux)
+	COPY_DIRS_CMD = rsync -a --include '*/' --exclude '*' "$(SRC_DIR)" "$(BIN_DIR)"
 endif
 
-ifeq ($(OS),Windows_NT)
-    # Windows
-    COPY_CMD = cmd " /c robocopy "src" "bin/src" /e /xf * /mt"
-else
-    # Unix-like systems
-    COPY_CMD = rsync -a --include '*/' --exclude '*' "src" "bin"
+# ASSETS COPY COMMAND
+ifeq ($(OS),windows)
+    COPY_ASSETS_CMD = cmd " /c robocopy "$(ASSETS_DIR)" "$(BIN_DIR)/$(ASSETS_DIR)" /s /purge /mt"
+else ifeq ($(OS),macOS)
+	COPY_ASSETS_CMD = rsync -a "$(ASSETS_DIR)" "$(BIN_DIR)"
+else ifeq ($(OS),linux)
+	COPY_ASSETS_CMD = rsync -a "$(ASSETS_DIR)" "$(BIN_DIR)"
 endif
 
-$(BIN):
+# TARGETS
+.DEFAULT_GOAL := dungeon
+
+$(BIN_DIR):
 	mkdir -p $@
 
-dirs: $(BIN)
-	@echo "wtf $(COPY_CMD)"
-	$(COPY_CMD)
+createdirs: $(BIN_DIR)
+	$(COPY_DIRS_CMD)
 
-$(OBJ): $(BIN)/%.o: %.cpp
+$(OBJ): $(BIN_DIR)/%.o: %.cpp
 	$(CXX) -o $@ -MMD -c $< $(CXXFLAGS) $(INCFLAGS)
 
-dungeon: dirs $(OBJ)
-	$(LD) -o $(BIN)/dungeon $(filter %.o, $^) $(LDFLAGS)
+dungeon: createdirs $(OBJ)
+	$(LD) -o $(BIN_DIR)/$(EXEC) $(filter %.o, $^) $(LDFLAGS)
 	
-run:
-	./bin/dungeon
+copyassets:
+	$(COPY_ASSETS_CMD)
 
-all: dirs dungeon
+run:
+	./$(BIN_DIR)/$(EXEC)
 
 .PHONY: clean
 
 clean:
-	rm -rf bin/src
+	rm -rf $(BIN_DIR)/$(SRC_DIR)
+
+all:
+	@echo "Building for $(OS)"
+	@$(MAKE) -s dungeon
+	@$(MAKE) -s copyassets
+	@$(MAKE) -s clean
+	@echo "Build finished"
