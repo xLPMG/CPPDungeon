@@ -12,7 +12,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       
       - name: Compile project
         run:  make
@@ -39,7 +39,6 @@ jobs:
           
       - name: Publish release
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: macOS.zip
           token: ${{ secrets.GITHUB_TOKEN }}
