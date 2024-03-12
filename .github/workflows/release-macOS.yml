@@ -31,14 +31,9 @@ jobs:
           tag_prefix: 'v'
           tag_template: 'yyyy.mm.dd.i'
           
-      - name: Create release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        uses: ncipollo/release-action@v1.14.0
         with:
-          tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
-          release_name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }} - macOS
-          draft: false
-          prerelease: false
-          makeLatest: true
+          tag: ${{ steps.generate_release_tag.outputs.next_release_tag }}
+          name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }} - MacOS
 
