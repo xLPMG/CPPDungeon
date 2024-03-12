@@ -1,308 +1,93 @@
-################################################################################
-#### Variables and settings
-################################################################################
+print-%:; @echo $($*)
 
-# Executable name
-EXEC = dungeon
-
-# Build, bin, assets, and install directories (bin and build root directories are kept for clean)
-BUILD_DIR_ROOT = build
-BIN_DIR_ROOT = bin
-ASSETS_DIR = res
-INSTALL_DIR := bin/$(EXEC)
-
-# Sources (searches recursively inside the source directory)
-SRC_DIR = src
-SRCS := $(sort $(shell find $(SRC_DIR) -name '*.cpp'))
-
-# Includes
-INCLUDE_DIR = lib
-INCLUDES := -I$(INCLUDE_DIR) -I/usr/local/include
-
-# C preprocessor settings
-CPPFLAGS = $(INCLUDES) -MMD -MP
-
-# C++ compiler settings
 CXX = g++
-CXXFLAGS = -std=c++20
-WARNINGS = -Wall -Wpedantic -Wextra
+LD = g++
 
-# Linker flags
-LDFLAGS = -lm -lstdc++
+# library paths
+PATH_LIB = lib
+INCFLAGS = -I$(PATH_LIB)
+INCFLAGS += -I/usr/local/include
 
-# Libraries to link
-LDLIBS =
+CXXFLAGS  = -std=c++20
+CXXFLAGS += -O2
+CXXFLAGS += -g
+CXXFLAGS += -Wall
+CXXFLAGS += -Wextra
+CXXFLAGS += -Wpedantic
+CXXFLAGS += -Wfloat-equal
+CXXFLAGS += -Wstrict-aliasing
+CXXFLAGS += -Wswitch-default
+CXXFLAGS += -Wformat=2
+CXXFLAGS += -Wno-unused-parameter
+CXXFLAGS += -Wno-strict-prototypes
+CXXFLAGS += -Wno-fixed-enum-extension
+CXXFLAGS += -Wno-int-to-void-pointer-cast
+CXXFLAGS += -Wno-gnu-statement-expression
+CXXFLAGS += -Wno-gnu-compound-literal-initializer
+CXXFLAGS += -Wno-gnu-zero-variadic-macro-arguments
+CXXFLAGS += -Wno-gnu-empty-struct
+CXXFLAGS += -Wno-gnu-auto-type
+CXXFLAGS += -Wno-gnu-empty-initializer
+CXXFLAGS += -Wno-gnu-pointer-arith
 
-# Target OS detection
-ifeq ($(OS),Windows_NT) # OS is a preexisting environment variable on Windows
-	OS = windows
-else
-	UNAME := $(shell uname -s)
-	ifeq ($(UNAME),Darwin)
-		OS = macos
-	else ifeq ($(UNAME),Linux)
-		OS = linux
-	else
-    	$(error OS not supported by this Makefile)
-	endif
-endif
+LDFLAGS = -lm
+LDFLAGS += -lstdc++
 
-# OS-specific settings
-ifeq ($(OS),windows)
-	# Link libgcc and libstdc++ statically on Windows
-	LDFLAGS += -static-libgcc -static-libstdc++
-
-	# Windows 32- and 64-bit common settings
-	INCLUDES +=
-	LDFLAGS +=
-	LDLIBS += -luser32 -lgdi32 -lopengl32 -lgdiplus -lShlwapi -ldwmapi -lstdc++fs -static
-
-	ifeq ($(win32),1)
-		# Windows 32-bit settings
-		INCLUDES +=
-		LDFLAGS +=
-		LDLIBS +=
-	else
-		# Windows 64-bit settings
-		INCLUDES +=
-		LDFLAGS +=
-		LDLIBS +=
-	endif
-else ifeq ($(OS),macos)
-	# macOS-specific settings
-	INCLUDES +=
-	LDFLAGS +=
-	LDLIBS += -framework OpenGL -framework GLUT -framework Carbon -lpng -L/usr/local/lib -framework CoreGraphics -framework Foundation
-else ifeq ($(OS),linux)
-	# Linux-specific settings
-	INCLUDES +=
-	LDFLAGS +=
-	LDLIBS += -lX11 -lGL -lpthread -lpng -lstdc++fs
-endif
-
-################################################################################
-#### Final setup
-################################################################################
-
-# Windows-specific default settings
-ifeq ($(OS),windows)
-	# Add .exe extension to executable
-	EXEC := $(EXEC).exe
-
-	ifeq ($(win32),1)
-		# Compile for 32-bit
-		CXXFLAGS += -m32
-	else
-		# Compile for 64-bit
-		CXXFLAGS += -m64
-	endif
-endif
-
-# OS-specific build, bin, and assets directories
-BUILD_DIR := $(BUILD_DIR_ROOT)/$(OS)
-BIN_DIR := $(BIN_DIR_ROOT)/$(OS)
-ifeq ($(OS),windows)
-	# Windows 32-bit
-	ifeq ($(win32),1)
-		BUILD_DIR := $(BUILD_DIR)32
-		BIN_DIR := $(BIN_DIR)32
-	# Windows 64-bit
-	else
-		BUILD_DIR := $(BUILD_DIR)64
-		BIN_DIR := $(BIN_DIR)64
-	endif
-endif
-
-# Debug (default) and release modes settings
-ifeq ($(release),1)
-	BUILD_DIR := $(BUILD_DIR)/release
-	BIN_DIR := $(BIN_DIR)/release
-	CXXFLAGS += -O3
-	CPPFLAGS += -DNDEBUG
-else
-	BUILD_DIR := $(BUILD_DIR)/debug
-	BIN_DIR := $(BIN_DIR)/debug
-	CXXFLAGS += -O0 -g
-endif
-
-# Objects and dependencies
-OBJS := $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
-DEPS := $(OBJS:.o=.d)
-COMPDBS := $(OBJS:.o=.json)
-
-# All files (sources and headers)
-# FILES := $(shell find $(SRC_DIR) $(INCLUDE_DIR) -name '*.cpp' -o -name '*.h' -o -name '*.hpp' -o -name '*.inl')
-
-ifeq ($(OS),macos)
-	FILES := $(shell find $(SRC_DIR)$(INCLUDE_DIR) -name '*.cpp' -o -name '*.h' -o -name '*.hpp' -o -name '*.inl')
-else ifeq ($(OS),linux)
-	FILES := $(shell find $(SRC_DIR) $(INCLUDE_DIR) -name '*.cpp' -o -name '*.h' -o -name '*.hpp' -o -name '*.inl')
-else ifeq ($(OS),windows)
+BIN = bin
+UNAME := $(shell uname -s)
+ifeq ($(UNAME),Darwin)
+	SRC = $(shell find src -name "*.cpp")
+else ifeq ($(UNAME),Linux)
+	SRC = $(shell find src -name "*.cpp")
+else ifeq ($(OS),Windows_NT)
 	find_files = $(foreach n,$1,$(shell C:\\\msys64\\\usr\\\bin\\\find.exe -L $2 -name "$n"))
-	FILES := $(call find_files,*.cpp *.h *.hpp *.inl,$(SRC_DIR))
-	FILES += $(call find_files,*.cpp *.h *.hpp *.inl,$(INCLUDE_DIR))
+	SRC = $(call find_files,*.cpp,src)
+	CXX += -mconsole
+endif
+OBJ = $(SRC:%.cpp=$(BIN)/%.o)
+DEP = $(SRC:%.cpp=$(BIN)/%.d)
+OUT = $(BIN)/game
+
+-include $(DEP)
+
+ifeq ($(UNAME),Darwin)
+	CXX = $(shell brew --prefix llvm)/bin/clang
+	LD = $(shell brew --prefix llvm)/bin/clang
+	LDFLAGS += -framework OpenGL -framework GLUT -framework Carbon -lpng -L/usr/local/lib
+	LDFLAGS += -framework CoreGraphics -framework Foundation
+else ifeq ($(UNAME),Linux)
+	LDFLAGS += -lX11 -lGL -lpthread -lpng -lstdc++fs
+else ifeq ($(OS),Windows_NT)
+	LDFLAGS += -luser32 -lgdi32 -lopengl32 -lgdiplus -lShlwapi -ldwmapi -lstdc++fs -static -std=c++20
 endif
 
-################################################################################
-#### Targets
-################################################################################
+ifeq ($(OS),Windows_NT)
+    # Windows
+    COPY_CMD = cmd " /c robocopy "src" "bin/src" /e /xf * /mt"
+else
+    # Unix-like systems
+    COPY_CMD = rsync -a --include '*/' --exclude '*' "src" "bin"
+endif
 
-.PHONY: all
-all: $(BIN_DIR)/$(EXEC)
+$(BIN):
+	mkdir -p $@
 
-# Build executable
-$(BIN_DIR)/$(EXEC): $(OBJS)
-	@echo "Building executable: $@"
-	@mkdir -p $(@D)
-	@$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
+dirs: $(BIN)
+	@echo "wtf $(COPY_CMD)"
+	$(COPY_CMD)
 
-# Compile C++ source files
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@echo "Compiling: $<"
-	@mkdir -p $(@D)
-	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(WARNINGS) -c $< -o $@
+$(OBJ): $(BIN)/%.o: %.cpp
+	$(CXX) -o $@ -MMD -c $< $(CXXFLAGS) $(INCFLAGS)
 
-# Include automatically generated dependencies
--include $(DEPS)
+dungeon: dirs $(OBJ)
+	$(LD) -o $(BIN)/dungeon $(filter %.o, $^) $(LDFLAGS)
+	
+run:
+	./bin/dungeon
 
-# Install dependencies
-.PHONY: dependencies-linux
-dependencies-ubuntu-latest:
-	@echo "Installing dependencies for Linux"
-	@sudo apt-get install -y libx11-dev libgl1-mesa-dev libpng-dev libstdc++-10-dev
+all: dirs dungeon
 
-.PHONY: dependencies-macos
-dependencies-macOS-latest:
-	@echo "Installing dependencies for macOS"
-	@brew install libpng
-
-.PHONY: dependencies-windows
-dependencies-windows-latest:
-	@echo "Installing dependencies for Windows"
-
-# Install packaged program
-.PHONY: install
-install: all copyassets
-	@echo "Packaging program to $(INSTALL_DIR)"
-	@mkdir -p $(INSTALL_DIR) && cp -r $(BIN_DIR)/. $(INSTALL_DIR)
-
-# Build and run
-.PHONY: run
-run: all
-	@echo "Starting program: $(BIN_DIR)/$(EXEC)"
-	@cd $(BIN_DIR) && ./$(EXEC)
-
-# Copy assets to bin directory for selected platform
-.PHONY: copyassets
-copyassets:
-	@echo "Copying assets from $(ASSETS_DIR) to $(BIN_DIR)"
-	@mkdir -p $(BIN_DIR)
-	@cp -r $(ASSETS_DIR) $(BIN_DIR)/
-
-# Clean all assets from bin directories for all platforms
-.PHONY: cleanassets
-cleanassets:
-	@echo "Cleaning assets for all platforms"
-	@find $(BIN_DIR_ROOT) -mindepth 3 ! -name $(EXEC) -delete
-
-# Clean build and bin directories for all platforms
 .PHONY: clean
+
 clean:
-	@echo "Cleaning $(BUILD_DIR_ROOT) and $(BIN_DIR_ROOT) directories"
-	@$(RM) -r $(BUILD_DIR_ROOT)
-	@$(RM) -r $(BIN_DIR_ROOT)
-
-.PHONY: compdb
-compdb: $(BUILD_DIR_ROOT)/compile_commands.json
-
-# Generate JSON compilation database (compile_commands.json) by merging fragments
-$(BUILD_DIR_ROOT)/compile_commands.json: $(COMPDBS)
-	@echo "Generating: $@"
-	@mkdir -p $(@D)
-	@printf "[\n" > $@
-	@sed -e '$$s/$$/,/' -s $(COMPDBS) | sed -e '$$s/,$$//' -e 's/^/    /' >> $@
-	@printf "]\n" >> $@
-
-# Generate JSON compilation database fragments from source files
-$(BUILD_DIR)/%.json: $(SRC_DIR)/%.cpp
-	@mkdir -p $(@D)
-	@printf "\
-	{\n\
-	    \"directory\": \"$(CURDIR)\",\n\
-	    \"command\": \"$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(WARNINGS) -c $< -o $(basename $@).o\",\n\
-	    \"file\": \"$<\"\n\
-	}\n" > $@
-
-# Run clang-format on source code
-.PHONY: format
-format:
-	@echo "Running clang-format"
-	@clang-format -i $(FILES)
-
-# Dry-run clang-format on source code to check for formatting errors
-.PHONY: format-check
-format-check:
-	@echo "Checking clang-format"
-	@clang-format --dry-run --Werror $(FILES)
-
-# Run clang-tidy on source code
-.PHONY: lint
-lint: compdb
-	@echo "Running clang-tidy"
-	@clang-tidy -p $(BUILD_DIR_ROOT) --warnings-as-errors='*' $(FILES)
-
-# Run clang-tidy on source code and fix found errors
-.PHONY: lint-fix
-lint-fix: compdb
-	@echo "Running clang-tidy --fix"
-	@clang-tidy -p $(BUILD_DIR_ROOT) --fix $(FILES)
-
-# Print help information
-.PHONY: help
-help:
-	@printf "\
-	Usage: make target... [options]...\n\
-	\n\
-	Targets:\n\
-	  all             Build executable (debug mode by default) (default target)\n\
-	  install         Install packaged program to desktop (debug mode by default)\n\
-	  run             Build and run executable (debug mode by default)\n\
-	  copyassets      Copy assets to executable directory for selected platform and configuration\n\
-	  cleanassets     Clean assets from executable directories (all platforms)\n\
-	  clean           Clean build and bin directories (all platforms)\n\
-	  compdb          Generate JSON compilation database (compile_commands.json)\n\
-	  format          Format source code using clang-format\n\
-	  format-check    Check that source code is formatted using clang-format\n\
-	  lint            Lint source code using clang-tidy\n\
-	  lint-fix        Lint and fix source code using clang-tidy\n\
-	  help            Print this information\n\
-	  printvars       Print Makefile variables for debugging\n\
-	\n\
-	Options:\n\
-	  release=1       Run target using release configuration rather than debug\n\
-	  win32=1         Build for 32-bit Windows (valid when built on Windows only)\n\
-	\n\
-	Note: the above options affect the all, install, run, copyassets, compdb, and printvars targets\n"
-
-# Print Makefile variables
-.PHONY: printvars
-printvars:
-	@printf "\
-	OS: \"$(OS)\"\n\
-	EXEC: \"$(EXEC)\"\n\
-	BUILD_DIR: \"$(BUILD_DIR)\"\n\
-	BIN_DIR: \"$(BIN_DIR)\"\n\
-	ASSETS_DIR: \"$(ASSETS_DIR)\"\n\
-	INSTALL_DIR: \"$(INSTALL_DIR)\"\n\
-	SRC_DIR: \"$(SRC_DIR)\"\n\
-	SRCS: \"$(SRCS)\"\n\
-	INCLUDE_DIR: \"$(INCLUDE_DIR)\"\n\
-	INCLUDES: \"$(INCLUDES)\"\n\
-	CXX: \"$(CXX)\"\n\
-	CPPFLAGS: \"$(CPPFLAGS)\"\n\
-	CXXFLAGS: \"$(CXXFLAGS)\"\n\
-	WARNINGS: \"$(WARNINGS)\"\n\
-	LDFLAGS: \"$(LDFLAGS)\"\n\
-	LDLIBS: \"$(LDLIBS)\"\n"
-
-# Made by Misha Krieger-Raynauld (https://github.com/KRMisha/Makefile)
+	rm -rf bin/src
