@@ -25,18 +25,20 @@ jobs:
 
       - name: Generate release tag
         id: generate_release_tag
-        uses: alexvingg/next-release-tag@v1.0.4
+        uses: amitsingh-007/next-release-tag@v5.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag_prefix: ''
-
+          tag_prefix: 'v'
+          tag_template: 'yyyy.mm.dd-i'
+          
       - name: Create release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.generate_release_tag.outputs.release_tag }}
-          release_name: Release ${{ steps.generate_release_tag.outputs.release_tag }} - macOS
+          tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
+          release_name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }} - macOS
           draft: false
           prerelease: false
+          makeLatest: true
 
