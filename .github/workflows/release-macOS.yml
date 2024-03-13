@@ -1,8 +1,8 @@
 name: Release MacOS
 
 on:
-  release:
-  workflow_dispatch:
+  push:
+    tags: [ 'v*' ]
 
 jobs:
   build-and-publish-macOS:
@@ -26,10 +26,6 @@ jobs:
           type: 'zip'
           filename: 'macOS.zip'
           path: './bin/macOS'
-         
-      - name: Get latest tag
-        uses: actions-ecosystem/action-get-latest-tag@v1
-        id: get-latest-tag
 
       - name: Publish macOS binaries
         uses: svenstaro/upload-release-action@v2
@@ -37,6 +33,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: macOS.zip
           asset_name: macOS-binaries.zip
-          tag: ${{ steps.get-latest-tag.outputs.tag }}
+          tag: ${{  github.ref_name }}
           overwrite: true
 
