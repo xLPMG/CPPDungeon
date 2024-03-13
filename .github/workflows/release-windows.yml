@@ -1,26 +1,22 @@
-name: Release Ubuntu
+name: Release Windows
 
 on:
   push:
     tags: [ '*' ]
 
 jobs:
-  build-and-publish-ubuntu:
-    runs-on: ubuntu-latest
+  build-and-publish-windows
+    runs-on: windows-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt install libglu1-mesa-dev 
-          sudo apt install freeglut3-dev 
-          sudo apt install libglfw3-dev 
-          sudo apt install libgles2-mesa-dev
       
       - name: Compile project
         run:  make
+
+      - name: Install dependencies
+        run: |
+          choco install glfw -y
 
       - name: Copy assets
         run: make copyassets
@@ -32,15 +28,15 @@ jobs:
         uses: thedoctor0/zip-release@0.7.6
         with:
           type: 'zip'
-          filename: 'ubuntu.zip'
-          path: './bin/linux'
-          
+          filename: 'windows.zip'
+          path: './bin/windows64'
+
       - name: Publish binaries
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ubuntu.zip
-          asset_name: ubuntu-binaries.zip
+          file: windows.zip
+          asset_name: windows-binaries.zip
           tag: ${{  github.ref_name }}
           overwrite: true
 
