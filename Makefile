@@ -86,7 +86,7 @@ DEP = $(SRC:%.cpp=$(BIN_DIR)/%.d)
 
 # DIRECTORY COPY COMMAND
 ifeq ($(OS),windows)
-    COPY_DIRS_CMD = cmd " /c robocopy $(SRC_DIR) $(BIN_DIR)/$(SRC_DIR) /e /xf * /mt /NFL /NDL /NJH /NJS /nc /ns /np"
+    COPY_DIRS_CMD = cmd /c 'robocopy $(SRC_DIR) $(BIN_DIR)/$(SRC_DIR) /e /xf * /mt /NFL /NDL /NJH /NJS /nc /ns /np'
 else ifeq ($(OS),macOS)
 	COPY_DIRS_CMD = rsync -a --include '*/' --exclude '*' "$(SRC_DIR)" "$(BIN_DIR)"
 else ifeq ($(OS),linux)
@@ -95,7 +95,7 @@ endif
 
 # ASSETS COPY COMMAND
 ifeq ($(OS),windows)
-    COPY_ASSETS_CMD = cmd " /c robocopy $(ASSETS_DIR) $(BIN_DIR)/$(ASSETS_DIR) /s /mt /NFL /NDL /NJH /NJS /nc /ns /np"
+    COPY_ASSETS_CMD = cmd /c 'robocopy $(ASSETS_DIR) $(BIN_DIR)/$(ASSETS_DIR) /s /mt /NFL /NDL /NJH /NJS /nc /ns /np'
 else ifeq ($(OS),macOS)
 	COPY_ASSETS_CMD = rsync -a "$(ASSETS_DIR)" "$(BIN_DIR)"
 else ifeq ($(OS),linux)
