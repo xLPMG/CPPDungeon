@@ -2,13 +2,18 @@ name: Release MacOS
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    inputs:
+      version_tag:
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      version_tag:
+        required: true
+        type: string
 
 jobs:
-  build:
+  build-and-publish:
     runs-on: macos-latest
     steps:
       - name: Checkout Repository
@@ -22,26 +27,19 @@ jobs:
 
       - name: Clean directory
         run: make clean
-
-      - name: Generate release tag
-        id: generate_release_tag
-        uses: amitsingh-007/next-release-tag@v5.0.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag_prefix: 'v'
-          tag_template: 'yyyy.mm.dd.i'
-
+  
       - name: Archive release
         uses: thedoctor0/zip-release@0.7.6
         with:
           type: 'zip'
           filename: 'macOS.zip'
           
-      - name: Publish release
-        uses: softprops/action-gh-release@v2
+      - name: Publish macOS binaries
+        uses: svenstaro/upload-release-action@v2
         with:
-          files: macOS.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
-          name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }} - MacOS
-          make_latest: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: macOS.zip
+          asset_name: macOS-binaries
+          tag: ${{ inputs.version_tag }}
+          overwrite: true
+

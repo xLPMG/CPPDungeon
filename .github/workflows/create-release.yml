@@ -1,0 +1,33 @@
+name: Create release
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate release tag
+        id: generate_release_tag
+        uses: amitsingh-007/next-release-tag@v5.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: 'v'
+          tag_template: 'yyyy.mm.dd.i'
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
+          name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
+          make_latest: true
+    
+      - name: Build releases
+        uses: ./.github/workflows/release-macOS.yml
+        with:
+            version-tag: ${{ steps.generate_release_tag.outputs.next_release_tag }}
