@@ -33,13 +33,14 @@ jobs:
         with:
           type: 'zip'
           filename: 'macOS.zip'
+          path: './bin/macOS'
           
       - name: Publish macOS binaries
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: macOS.zip
-          asset_name: macOS-binaries
+          asset_name: macOS-binaries.zip
           tag: ${{ inputs.version_tag }}
           overwrite: true
 
