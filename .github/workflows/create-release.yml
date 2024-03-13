@@ -28,6 +28,6 @@ jobs:
           make_latest: true
     
       - name: Build releases
-        uses: ./.github/workflows/release-macOS.yml
+        uses: xLPMG/CPPDungeon/.github/workflows/release-macOS.yml@main
         with:
             version-tag: ${{ steps.generate_release_tag.outputs.next_release_tag }}
