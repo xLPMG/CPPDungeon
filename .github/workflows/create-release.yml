@@ -32,4 +32,4 @@ jobs:
     needs: build
     uses: xLPMG/CPPDungeon/.github/workflows/release-macOS.yml@main
     with:
-      version-tag: ${{ needs.build.outputs.tag_out }}
+      version_tag: ${{ needs.build.outputs.tag_out }}
