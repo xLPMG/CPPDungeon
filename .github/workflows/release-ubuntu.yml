@@ -18,6 +18,14 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt install libglu1-mesa-dev 
+          sudo apt install freeglut3-dev 
+          sudo apt install libglfw3-dev 
+          sudo apt install libgles2-mesa-dev
       
       - name: Compile project
         run:  make
