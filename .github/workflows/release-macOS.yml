@@ -2,7 +2,6 @@ name: Release MacOS
 
 on:
   release:
-    types: [published]
   workflow_dispatch:
 
 jobs:
@@ -28,12 +27,18 @@ jobs:
           filename: 'macOS.zip'
           path: './bin/macOS'
           
+      - name: 'Get correct tag'
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: undefined
+
       - name: Publish macOS binaries
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: macOS.zip
           asset_name: macOS-binaries.zip
-          tag: ${{github.ref_name}}
+          tag: ${{ steps.previoustag.outputs.tag }}
           overwrite: true
 
