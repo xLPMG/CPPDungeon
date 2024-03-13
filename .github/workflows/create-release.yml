@@ -15,7 +15,7 @@ jobs:
         with:
           github_token: ${{ secrets.ACTIONS_TOKEN }}
           tag_prefix: 'v'
-          tag_template: 'yyyy.mm.dd.i'
+          tag_template: 'yyyy-mm-dd-i'
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
@@ -23,4 +23,5 @@ jobs:
           token: ${{ secrets.ACTIONS_TOKEN }}
           tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
           name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
+          body: "Note: All binaries were compiled for x86_64 architecture." 
           make_latest: true
