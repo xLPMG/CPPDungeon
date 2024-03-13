@@ -5,7 +5,7 @@ on:
     tags: [ '*' ]
 
 jobs:
-  build-and-publish-windows
+  build-and-publish:
     runs-on: windows-latest
     steps:
       - name: Checkout Repository
@@ -13,10 +13,6 @@ jobs:
       
       - name: Compile project
         run:  make
-
-      - name: Install dependencies
-        run: |
-          choco install glfw -y
 
       - name: Copy assets
         run: make copyassets
