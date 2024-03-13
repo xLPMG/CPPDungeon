@@ -41,6 +41,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: macOS.zip
           asset_name: macOS-binaries.zip
-          tag: ${{ inputs.version_tag }}
           overwrite: true
 
