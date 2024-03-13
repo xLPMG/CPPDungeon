@@ -1,16 +1,9 @@
 name: Release MacOS
 
 on:
+  release:
+    types: [published]
   workflow_dispatch:
-    inputs:
-      version_tag:
-        required: true
-        type: string
-  workflow_call:
-    inputs:
-      version_tag:
-        required: true
-        type: string
 
 jobs:
   build-and-publish-macOS:
@@ -41,6 +34,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: macOS.zip
           asset_name: macOS-binaries.zip
-          tag: ${{ inputs.version_tag }}
+          tag: ${{github.ref_name}}
           overwrite: true
 
