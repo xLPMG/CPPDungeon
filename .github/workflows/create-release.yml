@@ -26,8 +26,7 @@ jobs:
           tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
           name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
           make_latest: true
-    
-      - name: Build releases
-        uses: xLPMG/CPPDungeon/.github/workflows/release-macOS.yml@main
-        with:
-            version-tag: ${{ steps.generate_release_tag.outputs.next_release_tag }}
+  make-binaries:
+    uses: xLPMG/CPPDungeon/.github/workflows/release-macOS.yml@main
+    with:
+      version-tag: ${{ steps.generate_release_tag.outputs.next_release_tag }}
