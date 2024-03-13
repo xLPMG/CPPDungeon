@@ -8,7 +8,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  create-release:
     runs-on: ubuntu-latest
     outputs:
       tag_out: ${{ steps.generate_release_tag.outputs.next_release_tag }}
@@ -28,8 +28,14 @@ jobs:
           tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
           name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
           make_latest: true
-  make-binaries:
-    needs: build
+  release-macOS:
+    needs: create-release
     uses: xLPMG/CPPDungeon/.github/workflows/release-macOS.yml@main
+    with:
+      version_tag: ${{ needs.build.outputs.tag_out }}
+
+  release-ubuntu:
+    needs: create-release
+    uses: xLPMG/CPPDungeon/.github/workflows/release-ubuntu.yml@main
     with:
       version_tag: ${{ needs.build.outputs.tag_out }}

@@ -1,4 +1,4 @@
-name: Release MacOS
+name: Release Ubuntu
 
 on:
   workflow_dispatch:
@@ -13,8 +13,8 @@ on:
         type: string
 
 jobs:
-  build-and-publish-macOS:
-    runs-on: macos-latest
+  build-and-publish-ubuntu:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -32,15 +32,15 @@ jobs:
         uses: thedoctor0/zip-release@0.7.6
         with:
           type: 'zip'
-          filename: 'macOS.zip'
-          path: './bin/macOS'
+          filename: 'ubuntu.zip'
+          path: './bin/linux'
           
-      - name: Publish macOS binaries
+      - name: Publish Ubuntu binaries
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: macOS.zip
-          asset_name: macOS-binaries.zip
+          file: ubuntu.zip
+          asset_name: ubuntu-binaries.zip
           tag: ${{ inputs.version_tag }}
           overwrite: true
 
