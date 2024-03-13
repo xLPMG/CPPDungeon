@@ -15,7 +15,7 @@ jobs:
         run:  make
 
       - name: Copy assets
-        shell: pwsh
+        shell: cmd
         run: make copyassets
 
       - name: Clean directory
