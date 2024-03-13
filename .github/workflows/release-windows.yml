@@ -15,8 +15,7 @@ jobs:
         run:  make
 
       - name: Copy assets
-        shell: cmd
-        run: robocopy res bin/windows64/res /s /mt /NFL /NDL /NJH /NJS /nc /ns /np
+        run: cmd /c 'robocopy $(ASSETS_DIR) $(BIN_DIR)/$(ASSETS_DIR) /s /mt /NFL /NDL /NJH /NJS /nc /ns /np && exit 0'
 
       - name: Clean directory
         run: make clean
