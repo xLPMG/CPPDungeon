@@ -24,15 +24,15 @@ jobs:
         uses: thedoctor0/zip-release@0.7.6
         with:
           type: 'zip'
-          filename: 'macOS.zip'
-          path: './bin/macOS'
+          filename: 'macOS-x86_64.zip'
+          path: './bin/macOS-x86_64'
 
       - name: Publish binaries
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: macOS.zip
-          asset_name: cppdungeon-macOS-${{  github.ref_name }}.zip
+          file: macOS-x86_64.zip
+          asset_name: cppdungeon-macOS-x86_64-${{  github.ref_name }}.zip
           tag: ${{  github.ref_name }}
           overwrite: true
 

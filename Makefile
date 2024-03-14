@@ -24,6 +24,7 @@ else
     	$(error OS not supported by this Makefile)
 	endif
 endif
+ARCH := $(shell uname -m)
 
 # DIRECTORIES
 SRC_DIR = src
@@ -41,12 +42,17 @@ ifeq ($(OS),windows)
 	else
 		BIN_DIR := $(BIN_DIR)64
 	endif
+else ifeq ($(OS),macOS)
+	BIN_DIR := $(BIN_DIR)-$(ARCH)
 endif
 
 
 # INCLUDES
 INCFLAGS = -I$(LIB_DIR)
 INCFLAGS += -I/usr/local/include
+ifeq ($(ARCH),arm64)
+	INCFLAGS += -I/opt/homebrew/include
+endif
 
 # COMPILER FLAGS
 CXXFLAGS  = -std=c++20
@@ -61,8 +67,13 @@ LDFLAGS = -lm -lstdc++
 
 # LINKER LIBRARIES
 ifeq ($(OS),macOS)
-	LDFLAGS += -framework OpenGL -framework GLUT -framework Carbon -lpng -L/usr/local/lib
+	LDFLAGS += -framework OpenGL -framework GLUT -framework Carbon -lpng
 	LDFLAGS += -framework CoreGraphics -framework Foundation
+	ifeq ($(ARCH),arm64)
+		LDFLAGS += -L/opt/homebrew/lib
+	else ifeq ($(ARCH),x86_64)
+		LDFLAGS += -L/usr/local/lib
+	endif
 else ifeq ($(OS),linux)
 	LDFLAGS += -lX11 -lGL -lpthread -lpng -lstdc++fs
 else ifeq ($(OS),windows)
