@@ -9,7 +9,8 @@
 
 namespace cppdungeon
 {
-    namespace gameobjects {
+    namespace gameobjects
+    {
         class Item;
     }
 }
@@ -21,46 +22,16 @@ private:
     u32 id;
     u16 quantity;
     std::unique_ptr<olc::Sprite> sprite;
+    std::unique_ptr<olc::Decal> decal;
 
 public:
-    Item(std::string itemName, u32 itemId, u16 itemQuantity, std::string iconFile) : id(itemId), quantity(itemQuantity){
-        setName(itemName);
-        this->sprite = std::make_unique<olc::Sprite>(iconFile);
-    }
-
-    std::string getName() const {
-        return name;
-    }
-
-    void setName(const std::string& itemName) {
-        if (name.empty()) {
-            name = itemName;
-        } else {
-            if (name != itemName) {
-                std::cerr << "Error: Attempted to bind different names to the same item ID." << std::endl;
-            }
-        }
-    }
-
-    u32 getId() const {
-        return id;
-    }
-
-    u16 getQuantity() const {
-        return quantity;
-    }
-
-    void setQuantity(u16 newQuantity) {
-        quantity = newQuantity;
-    }
-
-    void addQuantity(int amount) {
-        quantity = std::max(0, quantity + amount);
-    }
-
-    olc::Sprite *getSprite() const {
-        return sprite.get();
-    }
+    Item(std::string itemName, u32 itemId, u16 itemQuantity, std::string iconFile);
+    std::string getName() const;
+    u32 getId() const;
+    u16 getQuantity() const;
+    void setQuantity(u16 newQuantity);
+    void addQuantity(int amount);
+    olc::Decal *getDecal() const;
 };
 
 #endif

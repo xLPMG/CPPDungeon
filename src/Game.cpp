@@ -1,7 +1,7 @@
 #include "Game.hpp"
 
 #ifdef WIN32
-#include <windows.h>
+#include "wtypes.h"
 #elif __APPLE__
 #include <CoreGraphics/CGDisplayConfiguration.h>
 #endif
@@ -58,8 +58,10 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     entityManager->renderAll(this, camera->getOffset());
     map->renderForeground(this, camera->getOffset(), GetScreenSize());
 
-    DrawString({4, 16}, std::to_string(level), olc::WHITE, 1);
     hud->render(this);
+    player->renderInventory(this);
+
+    DrawString({4, 16}, std::to_string(GetFPS())+" FPS", olc::WHITE, 1);
     return true;
 }
 
@@ -70,22 +72,26 @@ bool cppdungeon::Game::OnUserDestroy()
 
 int main()
 {
-    cppdungeon::u32 width = 0;
-    cppdungeon::u32 height = 0;
+    cppdungeon::u16 fullWidth = 0;
+    cppdungeon::u16 fullHeight = 0;
+
 #ifdef __APPLE__
     auto mainDisplayId = CGMainDisplayID();
-    width = CGDisplayPixelsWide(mainDisplayId);
-    height = CGDisplayPixelsHigh(mainDisplayId);
+    fullWidth = CGDisplayPixelsWide(mainDisplayId);
+    fullHeight = CGDisplayPixelsHigh(mainDisplayId);
+#elifdef WIN32
+    fullWidth = GetSystemMetrics(SM_CXSCREEN);
+    fullHeight = GetSystemMetrics(SM_CYSCREEN);
 #else
-    width = 1920;
-    height = 1080;
+    fullWidth = 1920;
+    fullHeight = 1080;
 #endif
-    width = 1200;
-    height = 600;
     cppdungeon::i8 scale = 4;
     cppdungeon::Game demo;
-    if (demo.Construct(width / scale, height / scale, scale, scale))
+
+    if (demo.Construct(fullWidth / scale, fullHeight / scale, scale, scale, true)){
         demo.Start();
+    }
 
     return 0;
 }
