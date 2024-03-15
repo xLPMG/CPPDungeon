@@ -9,6 +9,7 @@ cppdungeon::entities::Player::Player(olc::vf2d position) : Entity(position, {16,
     rightAnimation = std::make_unique<gfx::Animation>("./res/textures/hero/hero_right_sheet.png", 16, 16, 0.15);
     leftAnimation = std::make_unique<gfx::Animation>("./res/textures/hero/hero_right_sheet.png", 16, 16, 0.15);
     leftAnimation->flip(olc::Sprite::HORIZ);
+    inventory = std::make_unique<cppdungeon::items::Inventory>();
 }
 
 cppdungeon::entities::Player::~Player()
@@ -37,6 +38,11 @@ void cppdungeon::entities::Player::update(float &deltaTime, cppdungeon::world::M
         idleAnimation->update(deltaTime);
         break;
     }
+}
+
+void cppdungeon::entities::Player::renderInventory(olc::PixelGameEngine *pge)
+{
+    inventory->render(pge);
 }
 
 void cppdungeon::entities::Player::render(olc::PixelGameEngine *pge, olc::vf2d &offset)
@@ -123,4 +129,9 @@ void cppdungeon::entities::Player::move(i8 &x, i8 &y, bool sprinting, f32 &delta
     {
         position.x = (u32)(tileId % map->getWidth()) * TILE_SIZE.x - bounds.x - bounds.width;
     }
+}
+
+cppdungeon::items::Inventory *cppdungeon::entities::Player::getInventory()
+{
+    return inventory.get();
 }
