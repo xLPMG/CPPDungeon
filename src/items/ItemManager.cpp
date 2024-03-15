@@ -2,10 +2,10 @@
 
 cppdungeon::items::ItemManager::ItemManager()
 {
-    itemMap[1] = std::make_unique<Item>("Cool Sword", "./res/textures/items/MF_Items_weapon_1.png");
-    itemMap[3] = std::make_unique<Item>("Gold Sword", "./res/textures/items/MF_Items_weapon_3.png");
-    itemMap[2] = std::make_unique<Item>("Bronze Sword", "./res/textures/items/MF_Items_weapon_2.png");
-    itemMap[4] = std::make_unique<Item>("Looooong Sword", "./res/textures/items/MF_Items_weapon_4.png");
+    itemMap[1] = std::make_unique<Item>("Cool Sword", "./res/textures/items/MF_Items_weapon_1.png", ItemType::WEAPON);
+    itemMap[3] = std::make_unique<Item>("Gold Sword", "./res/textures/items/MF_Items_weapon_3.png", ItemType::WEAPON);
+    itemMap[2] = std::make_unique<Item>("Bronze Sword", "./res/textures/items/MF_Items_weapon_2.png", ItemType::WEAPON);
+    itemMap[4] = std::make_unique<Item>("Looooong Sword", "./res/textures/items/MF_Items_weapon_4.png", ItemType::WEAPON);
     itemMap[5] = std::make_unique<Item>("whatisthis", "./res/textures/items/MF_Items_weapon_5.png");
     itemMap[6] = std::make_unique<Item>("really long debug item", "./res/textures/items/debug.png");
 

@@ -37,21 +37,26 @@ private:
     cppdungeon::f32 itemListCenterY = 0;
     cppdungeon::i32 longNameStartPos = 0;
 
+    // EQUIPMENT
+    std::unique_ptr<olc::Sprite> equipButtonSprite;
+    std::unique_ptr<olc::Decal> equipButtonDecal;
+    olc::utils::geom2d::rect<f32> equipButton;
+
+    olc::utils::geom2d::rect<f32> equippedWeaponRect;
+    u32 equippedWeapon = 1;
+
 public:
     Inventory();
 
     void toggleOpen();
 
     bool getIsOpen() { return isOpen; }
-
-    // Add item to inventory
     void addItem(u32 itemId, int amount);
-
-    // Remove item from inventory
     void removeItem(u32 itemId, int amount);
-
     void update(olc::PixelGameEngine *pge, f32 &deltaTime);
     void render(olc::PixelGameEngine *pge);
+    void sortByName();
+    void sortyByQuantity();
 };
 
 #endif

@@ -68,6 +68,14 @@ namespace cppdungeon
         RIGHT
     };
 
+    enum class ItemType 
+    {
+        WEAPON,
+        ARMOR,
+        CONSUMABLE,
+        MISC
+    };
+
     static inline i32 idx(i32 x, i32 y, i32 width)
     {
         return y * width + x;

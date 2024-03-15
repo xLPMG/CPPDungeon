@@ -6,6 +6,9 @@ cppdungeon::items::Inventory::Inventory()
 {
     inventorySprite = std::make_unique<olc::Sprite>("./res/textures/ui/inventoryScreen.png");
     inventoryDecal = std::make_unique<olc::Decal>(inventorySprite.get());
+
+    equipButtonSprite = std::make_unique<olc::Sprite>("./res/textures/ui/equipButton.png");
+    equipButtonDecal = std::make_unique<olc::Decal>(equipButtonSprite.get());
 }
 
 void cppdungeon::items::Inventory::toggleOpen()
@@ -15,6 +18,11 @@ void cppdungeon::items::Inventory::toggleOpen()
 
 void cppdungeon::items::Inventory::addItem(u32 itemId, int amount)
 {
+    if (itemId == 0 || amount == 0)
+    {
+        return;
+    }
+
     for (auto it = items.begin(); it != items.end(); ++it)
     {
         if (it->first == itemId)
@@ -39,30 +47,59 @@ void cppdungeon::items::Inventory::removeItem(u32 itemId, int amount)
 
 void cppdungeon::items::Inventory::update(olc::PixelGameEngine *pge, f32 &deltaTime)
 {
-    if (isOpen)
+    if (!isOpen)
     {
-        if (pge->GetKey(olc::Key::UP).bPressed)
-        {
-            selectedItem--;
-        }
-        else if (pge->GetKey(olc::Key::DOWN).bPressed)
-        {
-            selectedItem++;
-        }
+        return;
+    }
 
-        if (selectedItem < 0)
-            selectedItem = 0;
-        else if (selectedItem > items.size() - 1)
+    // KEY INPUTS
+    if (pge->GetKey(olc::Key::UP).bPressed)
+    {
+        selectedItem--;
+    }
+    else if (pge->GetKey(olc::Key::DOWN).bPressed)
+    {
+        selectedItem++;
+    }
+
+    if (selectedItem < 0)
+        selectedItem = 0;
+    else if (selectedItem > items.size() - 1)
+    {
+        if (items.size() == 0)
         {
-            if (items.size() == 0)
+            selectedItem = 0;
+        }
+        else
+        {
+            selectedItem = items.size() - 1;
+        }
+    }
+
+    // EQUIPPING
+    bool equipButtonHovered = pge->GetMouseX() > equipButton.pos.x && pge->GetMouseX() < equipButton.pos.x + equipButton.size.x &&
+                              pge->GetMouseY() > equipButton.pos.y && pge->GetMouseY() < equipButton.pos.y + equipButton.size.y;
+    if (items.size() > 0)
+    {
+        ItemType selectedType = itemManager.findItemById(items[selectedItem].first)->getType();
+        if (selectedType == ItemType::WEAPON)
+        {
+            if (equipButtonHovered && pge->GetMouse(0).bReleased)
             {
-                selectedItem = 0;
-            }
-            else
-            {
-                selectedItem = items.size() - 1;
+                addItem(equippedWeapon, 1);
+                equippedWeapon = items[selectedItem].first;
+                removeItem(items[selectedItem].first, 1);
             }
         }
+    }
+
+    // UN-EQUIPPING
+    bool weaponSlotHovered = pge->GetMouseX() > equippedWeaponRect.pos.x && pge->GetMouseX() < equippedWeaponRect.pos.x + equippedWeaponRect.size.x &&
+                             pge->GetMouseY() > equippedWeaponRect.pos.y && pge->GetMouseY() < equippedWeaponRect.pos.y + equippedWeaponRect.size.y;
+    if (weaponSlotHovered && pge->GetMouse(0).bReleased && equippedWeapon > 0)
+    {
+        addItem(equippedWeapon, 1);
+        equippedWeapon = 0;
     }
 }
 
@@ -76,6 +113,12 @@ void cppdungeon::items::Inventory::render(olc::PixelGameEngine *pge)
         invPosition = {pge->ScreenWidth() / 2 - inventorySprite->width * inventoryScale.x / 2, pge->ScreenHeight() / 2 - inventorySprite->height * inventoryScale.y / 2};
         itemListCenterX = invPosition.x + inventorySprite->width * inventoryScale.x / 2;
         itemListCenterY = invPosition.y + inventorySprite->height * inventoryScale.y / 2 - 16.6f;
+
+        equipButton = {invPosition + olc::vf2d{186, 57}, equipButtonSprite->Size() * 0.4f};
+
+        equippedWeaponRect = {invPosition + olc::vf2d{35.5, 45}, {16.f, 16.f}};
+
+        hasCalculatedSizes = true;
     }
 
     pge->DrawDecal(invPosition, inventoryDecal.get(), inventoryScale);
@@ -104,7 +147,7 @@ void cppdungeon::items::Inventory::render(olc::PixelGameEngine *pge)
 
         if (itemName.length() > 16)
         {
-            itemName = itemName.substr(longNameStartPos, 13)+"...";
+            itemName = itemName.substr(longNameStartPos, 13) + "...";
         }
         if (i == 0)
         {
@@ -126,4 +169,41 @@ void cppdungeon::items::Inventory::render(olc::PixelGameEngine *pge)
             pge->DrawStringDecal(invPosition + olc::vf2d{6, 140}, item->getName(), olc::WHITE, {0.7, 0.7});
         }
     }
+
+    ////////////////////////////////////////////////
+    // EQUIPPED ITEMS
+    ////////////////////////////////////////////////
+    if (equippedWeapon > 0)
+    {
+        pge->DrawDecal(equippedWeaponRect.pos, itemManager.findItemById(equippedWeapon)->getDecal());
+    }
+
+    ////////////////////////////////////////////////
+    // EQUIP BUTTON
+    ////////////////////////////////////////////////
+    if (items.size() > 0)
+    {
+        ItemType selectedType = itemManager.findItemById(items[selectedItem].first)->getType();
+        if (selectedType == ItemType::WEAPON || selectedType == ItemType::ARMOR)
+        {
+            pge->DrawDecal(equipButton.pos, equipButtonDecal.get(), {0.4, 0.4});
+        }
+    }
+}
+
+void cppdungeon::items::Inventory::sortByName()
+{
+    std::sort(items.begin(), items.end(), [this](const std::pair<u32, u32> &a, const std::pair<u32, u32> &b)
+              {
+        const cppdungeon::items::Item *itemA = itemManager.findItemById(a.first);
+        const cppdungeon::items::Item *itemB = itemManager.findItemById(b.first);
+        if (itemA == nullptr || itemB == nullptr)
+            return false;
+        return itemA->getName() < itemB->getName(); });
+}
+
+void cppdungeon::items::Inventory::sortyByQuantity()
+{
+    std::sort(items.begin(), items.end(), [](const std::pair<u32, u32> &a, const std::pair<u32, u32> &b)
+              { return a.second > b.second; });
 }

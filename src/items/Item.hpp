@@ -19,15 +19,14 @@ class cppdungeon::items::Item
 {
 private:
     std::string name;
-    u32 id;
-    u16 quantity;
+    ItemType type;
     std::unique_ptr<olc::Sprite> sprite;
     std::unique_ptr<olc::Decal> decal;
 
 public:
-    Item(std::string itemName, std::string iconFile);
+    Item(std::string itemName, std::string iconFile, ItemType itemType = ItemType::MISC);
     std::string getName() const;
-    u32 getId() const;
+    ItemType getType() const;
     olc::Decal *getDecal() const;
 };
 
