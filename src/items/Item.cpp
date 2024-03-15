@@ -17,21 +17,6 @@ cppdungeon::u32 cppdungeon::items::Item::getId() const
     return id;
 }
 
-cppdungeon::u16 cppdungeon::items::Item::getQuantity() const
-{
-    return quantity;
-}
-
-void cppdungeon::items::Item::setQuantity(u16 newQuantity)
-{
-    quantity = newQuantity;
-}
-
-void cppdungeon::items::Item::addQuantity(int amount)
-{
-    quantity = std::max(0, quantity + amount);
-}
-
 olc::Decal *cppdungeon::items::Item::getDecal() const
 {
     return decal.get();

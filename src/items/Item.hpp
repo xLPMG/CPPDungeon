@@ -28,9 +28,6 @@ public:
     Item(std::string itemName, std::string iconFile);
     std::string getName() const;
     u32 getId() const;
-    u16 getQuantity() const;
-    void setQuantity(u16 newQuantity);
-    void addQuantity(int amount);
     olc::Decal *getDecal() const;
 };
 

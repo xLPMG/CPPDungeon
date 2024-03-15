@@ -28,13 +28,6 @@ namespace cppdungeon
     typedef size_t usize;
     typedef ssize_t isize;
 
-#define ASSERT(_e, ...)               \
-    if (!(_e))                        \
-    {                                 \
-        fprintf(stderr, __VA_ARGS__); \
-        exit(1);                      \
-    }
-
 #define PI 3.14159265359f
 #define TAU (2.0f * PI)
 #define PI_2 (PI / 2.0f)
@@ -86,6 +79,16 @@ namespace cppdungeon
     }
 
     static constexpr olc::vi2d TILE_SIZE = { 16,16 };
+
+    static inline f32 textWidth(const std::string &text, f32 scale)
+    {
+        return text.length() * 8 * scale;
+    }
+
+        static inline f32 textHeight(f32 scale)
+    {
+        return 8 * scale;
+    }
 
 }
 

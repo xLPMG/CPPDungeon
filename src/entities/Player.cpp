@@ -9,7 +9,7 @@ cppdungeon::entities::Player::Player(olc::vf2d position) : Entity(position, {16,
     rightAnimation = std::make_unique<gfx::Animation>("./res/textures/hero/hero_right_sheet.png", 16, 16, 0.15);
     leftAnimation = std::make_unique<gfx::Animation>("./res/textures/hero/hero_right_sheet.png", 16, 16, 0.15);
     leftAnimation->flip(olc::Sprite::HORIZ);
-    inventory = std::make_unique<cppdungeon::gameobjects::Inventory>();
+    inventory = std::make_unique<cppdungeon::items::Inventory>();
 }
 
 cppdungeon::entities::Player::~Player()

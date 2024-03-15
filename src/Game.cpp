@@ -32,14 +32,27 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     {
         return false;
     }
-    bool moveRight = GetKey(olc::Key::RIGHT).bHeld || GetKey(olc::Key::D).bHeld;
-    bool moveLeft = GetKey(olc::Key::LEFT).bHeld || GetKey(olc::Key::A).bHeld;
-    bool moveUp = GetKey(olc::Key::UP).bHeld || GetKey(olc::Key::W).bHeld;
-    bool moveDown = GetKey(olc::Key::DOWN).bHeld || GetKey(olc::Key::S).bHeld;
-    bool sprinting = GetKey(olc::Key::SHIFT).bHeld;
-    i8 x = moveRight - moveLeft;
-    i8 y = moveDown - moveUp;
-    player->move(x, y, sprinting, fElapsedTime, map.get());
+
+    if (GetKey(olc::Key::E).bPressed)
+    {
+        player->getInventory()->toggleOpen();
+    }
+
+    if (!player->getInventory()->getIsOpen())
+    {
+        bool moveRight = GetKey(olc::Key::RIGHT).bHeld || GetKey(olc::Key::D).bHeld;
+        bool moveLeft = GetKey(olc::Key::LEFT).bHeld || GetKey(olc::Key::A).bHeld;
+        bool moveUp = GetKey(olc::Key::UP).bHeld || GetKey(olc::Key::W).bHeld;
+        bool moveDown = GetKey(olc::Key::DOWN).bHeld || GetKey(olc::Key::S).bHeld;
+        bool sprinting = GetKey(olc::Key::SHIFT).bHeld;
+        i8 x = moveRight - moveLeft;
+        i8 y = moveDown - moveUp;
+        player->move(x, y, sprinting, fElapsedTime, map.get());
+    }
+    else
+    {
+        player->getInventory()->update(this, fElapsedTime);
+    }
 
     if (GetKey(olc::Key::SPACE).bPressed)
     {
@@ -52,9 +65,32 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     if (GetKey(olc::Key::J).bPressed)
     {
         player->getInventory()->addItem(1, 1);
-    }else if (GetKey(olc::Key::K).bPressed)
+        player->getInventory()->addItem(2, 1);
+        player->getInventory()->addItem(3, 1);
+        player->getInventory()->addItem(4, 1);
+        player->getInventory()->addItem(5, 1);
+        player->getInventory()->addItem(6, 1);
+        player->getInventory()->addItem(7, 1);
+        player->getInventory()->addItem(8, 1);
+        player->getInventory()->addItem(9, 1);
+        player->getInventory()->addItem(10, 1);
+        player->getInventory()->addItem(11, 1);
+        player->getInventory()->addItem(12, 1);
+    }
+    else if (GetKey(olc::Key::K).bPressed)
     {
         player->getInventory()->removeItem(1, 1);
+        player->getInventory()->removeItem(2, 1);
+        player->getInventory()->removeItem(3, 1);
+        player->getInventory()->removeItem(4, 1);
+        player->getInventory()->removeItem(5, 1);
+        player->getInventory()->removeItem(6, 1);
+        player->getInventory()->removeItem(7, 1);
+        player->getInventory()->removeItem(8, 1);
+        player->getInventory()->removeItem(9, 1);
+        player->getInventory()->removeItem(10, 1);
+        player->getInventory()->removeItem(11, 1);
+        player->getInventory()->removeItem(12, 1);
     }
 
     // UPDATE

@@ -5,6 +5,7 @@
 #include <string>
 #include <stdexcept> // for std::out_of_range
 #include "Item.hpp"
+#include <memory>
 
 namespace cppdungeon
 {
@@ -14,24 +15,13 @@ namespace cppdungeon
     }
 }
 
-class cppdungeon::items::ItemManager {
+class cppdungeon::items::ItemManager
+{
 private:
-    static const std::unordered_map<int, Item> itemMap = {
-        {1, Item("Health Potion", "icon")}
-    };
+    std::unordered_map<int, std::unique_ptr<cppdungeon::items::Item>> itemMap;
 public:
-    static const std::unordered_map<int, Item>& getItemMap() {
-        return itemMap;
-    }
-
-    static const Item& findItemById(int id) {
-        auto it = itemMap.find(id);
-        if (it != itemMap.end()) {
-            return it->second;
-        } else {
-            throw std::out_of_range("Item not found");
-        }
-    }
+    ItemManager();
+    const Item *findItemById(int id);
 };
 
 #endif
