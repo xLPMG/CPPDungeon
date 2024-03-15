@@ -10,7 +10,7 @@
 
 #include "Entity.hpp"
 #include "../gfx/Animation.hpp"
-#include "../gameobjects/Inventory.hpp"
+#include "../items/Inventory.hpp"
 
 namespace cppdungeon
 {
@@ -28,7 +28,7 @@ private:
     std::unique_ptr<gfx::Animation> backAnimation;
     std::unique_ptr<gfx::Animation> leftAnimation;
     std::unique_ptr<gfx::Animation> rightAnimation;
-    std::unique_ptr<cppdungeon::gameobjects::Inventory> inventory;
+    std::unique_ptr<cppdungeon::items::Inventory> inventory;
 
     rect bounds = {3, 10, 10, 6};
     rect hitbox = {0, 0, 0, 0};
@@ -41,6 +41,7 @@ public:
     void render(olc::PixelGameEngine *pge, olc::vf2d &offset);
     void renderInventory(olc::PixelGameEngine *pge);
     void move(i8 &x, i8 &y, bool sprinting, f32 &deltaTime, cppdungeon::world::Map *map);
+    cppdungeon::items::Inventory *getInventory();
 };
 
 #endif

@@ -10,25 +10,26 @@ bool cppdungeon::Game::OnUserCreate()
 {
     tileRegistry = std::make_unique<cppdungeon::world::tiles::TileRegistry>();
     map = std::make_unique<cppdungeon::world::Map>(1000, 99, 99, tileRegistry.get());
-    camera = std::make_unique<cppdungeon::gfx::Camera>(olc::vf2d{0,0});
+    camera = std::make_unique<cppdungeon::gfx::Camera>(olc::vf2d{0, 0});
     entityManager = std::make_unique<cppdungeon::entities::EntityManager>();
     playerEntityID = entityManager->addEntity<cppdungeon::entities::Player>();
     entityManager->setPlayer(playerEntityID);
-    player = dynamic_cast<cppdungeon::entities::Player*>(entityManager->getPlayer());
+    player = dynamic_cast<cppdungeon::entities::Player *>(entityManager->getPlayer());
     player->setPosition(map->getSpawnPoint());
 
     hud = std::make_unique<cppdungeon::gfx::HUD>(player);
 
     u32 tinyId = entityManager->addEntity<cppdungeon::entities::TinyZombie>();
-    entityManager->getEntity(tinyId)->setPosition(player->getPosition() + olc::vf2d{4, 4}+TILE_SIZE);
-    entityManager->getEntity(tinyId)->followWithin(player, 1*TILE_SIZE.x);
+    entityManager->getEntity(tinyId)->setPosition(player->getPosition() + olc::vf2d{4, 4} + TILE_SIZE);
+    entityManager->getEntity(tinyId)->followWithin(player, 1 * TILE_SIZE.x);
     return true;
 }
 
 bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
 {
     // INPUT
-    if(GetKey(olc::Key::ESCAPE).bHeld){
+    if (GetKey(olc::Key::ESCAPE).bHeld)
+    {
         return false;
     }
     bool moveRight = GetKey(olc::Key::RIGHT).bHeld || GetKey(olc::Key::D).bHeld;
@@ -40,11 +41,20 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     i8 y = moveDown - moveUp;
     player->move(x, y, sprinting, fElapsedTime, map.get());
 
-    if(GetKey(olc::Key::SPACE).bPressed){
+    if (GetKey(olc::Key::SPACE).bPressed)
+    {
         map->regenerate(seed);
         player->setPosition(map->getSpawnPoint());
         seed++;
         level++;
+    }
+
+    if (GetKey(olc::Key::J).bPressed)
+    {
+        player->getInventory()->addItem(1, 1);
+    }else if (GetKey(olc::Key::K).bPressed)
+    {
+        player->getInventory()->removeItem(1, 1);
     }
 
     // UPDATE
@@ -61,7 +71,7 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
     hud->render(this);
     player->renderInventory(this);
 
-    DrawString({4, 16}, std::to_string(GetFPS())+" FPS", olc::WHITE, 1);
+    DrawString({4, 16}, std::to_string(GetFPS()) + " FPS", olc::WHITE, 1);
     return true;
 }
 
@@ -89,7 +99,8 @@ int main()
     cppdungeon::i8 scale = 4;
     cppdungeon::Game demo;
 
-    if (demo.Construct(fullWidth / scale, fullHeight / scale, scale, scale, true)){
+    if (demo.Construct(fullWidth / scale, fullHeight / scale, scale, scale, true))
+    {
         demo.Start();
     }
 

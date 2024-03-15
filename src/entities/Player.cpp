@@ -130,3 +130,8 @@ void cppdungeon::entities::Player::move(i8 &x, i8 &y, bool sprinting, f32 &delta
         position.x = (u32)(tileId % map->getWidth()) * TILE_SIZE.x - bounds.x - bounds.width;
     }
 }
+
+cppdungeon::items::Inventory *cppdungeon::entities::Player::getInventory()
+{
+    return inventory.get();
+}
