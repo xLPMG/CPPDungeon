@@ -11,7 +11,7 @@
 #include <sys/types.h>
 
 #define OLC_IGNORE_VEC2D
-#include "olcUTIL_Geometry2D.h"
+#include <olcUTIL_Geometry2D.h>
 
 namespace cppdungeon
 {
@@ -68,7 +68,7 @@ namespace cppdungeon
         RIGHT
     };
 
-    enum class ItemType 
+    enum class ItemType
     {
         WEAPON,
         ARMOR,

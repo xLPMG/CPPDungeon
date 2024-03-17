@@ -13,6 +13,7 @@
 #include "entities/Entity.hpp"
 #include "entities/Player.hpp"
 #include "entities/TinyZombie.hpp"
+#include "projectiles/ProjectileManager.hpp"
 #include "world/Map.hpp"
 #include "world/tiles/TileRegistry.hpp"
 #include "gfx/HUD.hpp"
@@ -36,6 +37,7 @@ private:
     std::unique_ptr<cppdungeon::world::Map> map;
     std::unique_ptr<cppdungeon::gfx::Camera> camera;
     std::unique_ptr<cppdungeon::entities::EntityManager> entityManager;
+    std::unique_ptr<cppdungeon::projectiles::ProjectileManager> projectileManager;
     u32 playerEntityID = 0;
     cppdungeon::entities::Player *player;
     std::unique_ptr<cppdungeon::gfx::HUD> hud;

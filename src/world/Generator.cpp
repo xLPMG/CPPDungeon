@@ -389,6 +389,7 @@ void cppdungeon::world::Generator::buildWalls()
             if (oldBackground[neighborS] == 0 && oldBackground[neighborSW] == 0 && oldBackground[neighborSE] == 0 && oldBackground[neighborW] > 0 && oldBackground[neighborE] > 0)
             {
                 tilesBackgroundPtr->at(neighborS) = 18;
+                tilesForegroundPtr->at(neighborS) = 18;
                 tilesForegroundPtr->at(self) = 19;
             }
             // left center wall

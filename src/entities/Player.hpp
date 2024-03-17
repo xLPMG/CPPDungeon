@@ -11,6 +11,7 @@
 #include "Entity.hpp"
 #include "../gfx/Animation.hpp"
 #include "../items/Inventory.hpp"
+#include "../projectiles/ProjectileManager.hpp"
 
 namespace cppdungeon
 {
@@ -41,6 +42,7 @@ public:
     void render(olc::PixelGameEngine *pge, olc::vf2d &offset);
     void renderInventory(olc::PixelGameEngine *pge);
     void move(i8 &x, i8 &y, bool sprinting, f32 &deltaTime, cppdungeon::world::Map *map);
+    void attack(olc::PixelGameEngine *pge, cppdungeon::projectiles::ProjectileManager *pM, olc::vf2d offset);
     cppdungeon::items::Inventory *getInventory();
 };
 
