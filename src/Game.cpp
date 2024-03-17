@@ -17,11 +17,19 @@ bool cppdungeon::Game::OnUserCreate()
     player = dynamic_cast<cppdungeon::entities::Player *>(entityManager->getPlayer());
     player->setPosition(map->getSpawnPoint());
 
+    projectileManager = std::make_unique<cppdungeon::projectiles::ProjectileManager>();
     hud = std::make_unique<cppdungeon::gfx::HUD>(player);
 
     u32 tinyId = entityManager->addEntity<cppdungeon::entities::TinyZombie>();
     entityManager->getEntity(tinyId)->setPosition(player->getPosition() + olc::vf2d{4, 4} + TILE_SIZE);
     entityManager->getEntity(tinyId)->followWithin(player, 1 * TILE_SIZE.x);
+
+    player->getInventory()->addItem(1, 1);
+    player->getInventory()->addItem(2, 1);
+    player->getInventory()->addItem(3, 1);
+    player->getInventory()->addItem(4, 1);
+    player->getInventory()->addItem(16, 1);
+
     return true;
 }
 
@@ -62,38 +70,13 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
         level++;
     }
 
-    if (GetKey(olc::Key::J).bPressed)
+    if (GetMouse(0).bPressed)
     {
-        player->getInventory()->addItem(1, 1);
-        player->getInventory()->addItem(2, 1);
-        player->getInventory()->addItem(3, 1);
-        player->getInventory()->addItem(4, 1);
-        player->getInventory()->addItem(5, 1);
-        player->getInventory()->addItem(6, 1);
-        player->getInventory()->addItem(7, 1);
-        player->getInventory()->addItem(8, 1);
-        player->getInventory()->addItem(9, 1);
-        player->getInventory()->addItem(10, 1);
-        player->getInventory()->addItem(11, 1);
-        player->getInventory()->addItem(12, 1);
-    }
-    else if (GetKey(olc::Key::K).bPressed)
-    {
-        player->getInventory()->removeItem(1, 1);
-        player->getInventory()->removeItem(2, 1);
-        player->getInventory()->removeItem(3, 1);
-        player->getInventory()->removeItem(4, 1);
-        player->getInventory()->removeItem(5, 1);
-        player->getInventory()->removeItem(6, 1);
-        player->getInventory()->removeItem(7, 1);
-        player->getInventory()->removeItem(8, 1);
-        player->getInventory()->removeItem(9, 1);
-        player->getInventory()->removeItem(10, 1);
-        player->getInventory()->removeItem(11, 1);
-        player->getInventory()->removeItem(12, 1);
+        player->attack(this, projectileManager.get(), camera->getOffset());
     }
 
     // UPDATE
+    projectileManager->update(fElapsedTime, map.get());
     entityManager->updateAll(fElapsedTime, map.get());
 
     // RENDER
@@ -102,6 +85,7 @@ bool cppdungeon::Game::OnUserUpdate(float fElapsedTime)
 
     map->renderBackground(this, camera->getOffset(), GetScreenSize());
     entityManager->renderAll(this, camera->getOffset());
+    projectileManager->render(this, camera->getOffset());
     map->renderForeground(this, camera->getOffset(), GetScreenSize());
 
     hud->render(this);

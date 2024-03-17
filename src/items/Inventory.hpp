@@ -47,9 +47,8 @@ private:
 
 public:
     Inventory();
-
+    cppdungeon::items::ItemManager *getItemManager() { return &itemManager; }
     void toggleOpen();
-
     bool getIsOpen() { return isOpen; }
     void addItem(u32 itemId, int amount);
     void removeItem(u32 itemId, int amount);
@@ -57,6 +56,8 @@ public:
     void render(olc::PixelGameEngine *pge);
     void sortByName();
     void sortyByQuantity();
+
+    u32 getEquippedWeapon() { return equippedWeapon; }
 };
 
 #endif

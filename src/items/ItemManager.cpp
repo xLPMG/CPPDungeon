@@ -18,6 +18,8 @@ cppdungeon::items::ItemManager::ItemManager()
     itemMap[13] = std::make_unique<Item>("Tool 7", "./res/textures/items/MF_Items_tool_7.png");
     itemMap[14] = std::make_unique<Item>("Tool 8", "./res/textures/items/MF_Items_tool_8.png");
     itemMap[15] = std::make_unique<Item>("Tool 9", "./res/textures/items/MF_Items_tool_9.png");
+
+    itemMap[16] = std::make_unique<Item>("Magic wand", "./res/textures/items/MF_Items_weapon_11.png", ItemType::WEAPON);
 }
 
 const cppdungeon::items::Item *cppdungeon::items::ItemManager::findItemById(int id)

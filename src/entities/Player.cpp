@@ -1,4 +1,7 @@
 #include "Player.hpp"
+#include "../items/Item.hpp"
+#include "../items/ItemManager.hpp"
+#include "../projectiles/ProjectileManager.hpp"
 #include <iostream>
 
 cppdungeon::entities::Player::Player(olc::vf2d position) : Entity(position, {16, 16})
@@ -64,6 +67,12 @@ void cppdungeon::entities::Player::render(olc::PixelGameEngine *pge, olc::vf2d &
     default:
         idleAnimation->render(pge, position - offset);
         break;
+    }
+
+    if(inventory->getEquippedWeapon() != 0)
+    {
+        const cppdungeon::items::Item *item = inventory->getItemManager()->findItemById(inventory->getEquippedWeapon());
+        pge->DrawDecal(pge->GetMousePos(), item->getDecal(), {0.7, 0.7});
     }
 }
 
@@ -134,4 +143,13 @@ void cppdungeon::entities::Player::move(i8 &x, i8 &y, bool sprinting, f32 &delta
 cppdungeon::items::Inventory *cppdungeon::entities::Player::getInventory()
 {
     return inventory.get();
+}
+
+void cppdungeon::entities::Player::attack(olc::PixelGameEngine *pge, cppdungeon::projectiles::ProjectileManager *pM, olc::vf2d offset)
+{
+   if(inventory->getEquippedWeapon() == 16){
+    olc::vf2d direction = pge->GetMousePos() - (position-offset);
+    olc::vf2d normalized = direction.norm();
+        pM->addProjectile(position+8, normalized, 60, {1,1}, olc::WHITE, 5, "./res/textures/projectiles/gempurple.png"); 
+   }
 }
